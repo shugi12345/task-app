@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
 import Checkbox from 'expo-checkbox';
 
 function colorFor(level) {
@@ -21,7 +21,7 @@ function computeUrgency(task) {
   return Math.min(5, task.urgency + Math.floor(progress * (5 - task.urgency)));
 }
 
-export default function TaskItem({ task, onComplete }) {
+export default function TaskItem({ task, onComplete, onPress }) {
   const [checked, setChecked] = React.useState(false);
   const anim = React.useRef(new Animated.Value(1)).current;
   const urgency = computeUrgency(task);
@@ -33,33 +33,37 @@ export default function TaskItem({ task, onComplete }) {
   }, [checked]);
 
   return (
-    <Animated.View style={[
-      styles.row,
-      {
-        opacity: anim,
-        transform: [
-          { translateX: anim.interpolate({ inputRange: [0,1], outputRange: [-50,0] }) },
-          { scale: anim }
-        ],
-      },
-    ]}>
-      <Checkbox value={checked} onValueChange={setChecked} />
-      <View style={styles.info}>
-        <Text style={styles.title}>{task.title}</Text>
-        <Text style={styles.duration}>{task.duration}</Text>
-      </View>
-      <View style={styles.urgency}>
-        {[1,2,3,4,5].map(l => (
-          <View
-            key={l}
-            style={[
-              styles.dot,
-              { backgroundColor: l <= urgency ? colorFor(urgency) : '#333' },
-            ]}
-          />
-        ))}
-      </View>
-    </Animated.View>
+    <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
+      <Animated.View
+        style={[
+          styles.row,
+          {
+            opacity: anim,
+            transform: [
+              { translateX: anim.interpolate({ inputRange: [0, 1], outputRange: [-50, 0] }) },
+              { scale: anim },
+            ],
+          },
+        ]}
+      >
+        <Checkbox value={checked} onValueChange={setChecked} />
+        <View style={styles.info}>
+          <Text style={styles.title}>{task.title}</Text>
+          <Text style={styles.duration}>{task.duration}</Text>
+        </View>
+        <View style={styles.urgency}>
+          {[1, 2, 3, 4, 5].map((l) => (
+            <View
+              key={l}
+              style={[
+                styles.dot,
+                { backgroundColor: l <= urgency ? colorFor(urgency) : '#333' },
+              ]}
+            />
+          ))}
+        </View>
+      </Animated.View>
+    </TouchableOpacity>
   );
 }
 
