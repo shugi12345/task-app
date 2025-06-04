@@ -12,7 +12,14 @@ export default function UrgencyPicker({ value, onChange }) {
   return (
     <View style={styles.row}>
       {[1,2,3,4,5].map(l => (
-        <Pressable key={l} onPress={() => onChange(l)} style={[styles.circle, {backgroundColor: l <= value ? colorFor(l) : '#555'}]} />
+        <Pressable
+          key={l}
+          onPress={() => onChange(l)}
+          style={[
+            styles.circle,
+            { backgroundColor: l <= value ? colorFor(value) : '#555' },
+          ]}
+        />
       ))}
     </View>
   );

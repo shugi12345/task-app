@@ -46,8 +46,10 @@ export default function TodoScreen() {
               value={text}
               onChangeText={setText}
             />
-            <Button title="Add" onPress={() => { addItem(); setShowForm(false); }} />
-            <Button title="Cancel" onPress={() => setShowForm(false)} />
+            <View style={styles.buttonRow}>
+              <Button title="Add" color="#bb86fc" onPress={() => { addItem(); setShowForm(false); }} />
+              <Button title="Cancel" color="#bb86fc" onPress={() => setShowForm(false)} />
+            </View>
           </View>
         </View>
       </Modal>
@@ -77,6 +79,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: '90%',
   },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -88,5 +94,6 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 16,
+    color: '#fff',
   },
 });
