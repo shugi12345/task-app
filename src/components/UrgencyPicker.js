@@ -2,10 +2,8 @@ import React from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
 
 function colorFor(level) {
-  const ratio = (level - 1) / 4; // 0 -> green, 1 -> red
-  const r = Math.round(255 * ratio);
-  const g = Math.round(200 * (1 - ratio));
-  return `rgb(${r}, ${g}, 0)`;
+  const hue = 120 - (level - 1) * 30; // 1 -> green, 5 -> red
+  return `hsl(${hue}, 100%, 50%)`;
 }
 
 export default function UrgencyPicker({ value, onChange }) {
