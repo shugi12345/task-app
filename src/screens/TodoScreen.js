@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, FlatList, StyleSheet, Modal } from 'react-native';
+import { View, TextInput, FlatList, StyleSheet, Modal } from 'react-native';
 import TodoItem from '../components/TodoItem';
 import FloatingActionButton from '../components/FloatingActionButton';
+import AppButton from '../components/AppButton';
 
 export default function TodoScreen() {
   const [items, setItems] = useState([]);
@@ -31,7 +32,7 @@ export default function TodoScreen() {
       />
       <FloatingActionButton onPress={() => setShowForm(true)} />
 
-      <Modal visible={showForm} animationType="slide" transparent>
+      <Modal visible={showForm} animationType="slide" transparent onRequestClose={() => setShowForm(false)}>
         <View style={styles.modalBackdrop}>
           <View style={styles.modalContent}>
             <TextInput
@@ -42,8 +43,8 @@ export default function TodoScreen() {
               onChangeText={setText}
             />
             <View style={styles.buttonRow}>
-              <Button title="Add" color="#bb86fc" onPress={() => { addItem(); setShowForm(false); }} />
-              <Button title="Cancel" color="#bb86fc" onPress={() => setShowForm(false)} />
+              <AppButton title="Cancel" onPress={() => setShowForm(false)} />
+              <AppButton title="Add" onPress={() => { addItem(); setShowForm(false); }} />
             </View>
           </View>
         </View>
@@ -57,9 +58,9 @@ const styles = StyleSheet.create({
   input: {
     borderColor: '#444',
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: 20,
     padding: 10,
-    borderRadius: 4,
+    borderRadius: 8,
     color: '#fff',
   },
   modalBackdrop: {
