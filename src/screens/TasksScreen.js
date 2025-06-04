@@ -75,9 +75,12 @@ export default function TasksScreen() {
                 onChange={(e, d) => {
                   setShowDurationPicker(false);
                   if (d) {
-                    const h = d.getHours().toString().padStart(2, '0');
-                    const m = d.getMinutes().toString().padStart(2, '0');
-                    setDuration(`${h}:${m}`);
+                    const hours = d.getHours();
+                    const minutes = d.getMinutes();
+                    const parts = [];
+                    if (hours) parts.push(`${hours}h`);
+                    if (minutes) parts.push(`${minutes}m`);
+                    setDuration(parts.join(' ') || '0m');
                   }
                 }}
               />
@@ -101,8 +104,10 @@ export default function TasksScreen() {
                 }}
               />
             )}
-            <Button title="Add" onPress={addTask} />
-            <Button title="Cancel" onPress={() => setShowForm(false)} />
+            <View style={styles.buttonRow}>
+              <Button title="Add" color="#bb86fc" onPress={addTask} />
+              <Button title="Cancel" color="#bb86fc" onPress={() => setShowForm(false)} />
+            </View>
           </View>
         </View>
       </Modal>
@@ -131,5 +136,9 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     width: '90%',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });

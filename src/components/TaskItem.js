@@ -33,7 +33,13 @@ export default function TaskItem({ task, onComplete }) {
       </View>
       <View style={styles.urgency}>
         {[1,2,3,4,5].map(l => (
-          <View key={l} style={[styles.dot, {backgroundColor: l <= urgency ? colorFor(l) : '#333'}]} />
+          <View
+            key={l}
+            style={[
+              styles.dot,
+              { backgroundColor: l <= urgency ? colorFor(urgency) : '#333' },
+            ]}
+          />
         ))}
       </View>
     </View>
