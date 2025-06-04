@@ -7,7 +7,7 @@ function colorFor(level) {
   return `hsl(${hue}, 100%, 50%)`;
 }
 
-function computeUrgency(task) {
+export function computeUrgency(task) {
   if (!task.dueDate) return task.urgency;
   const due = new Date(task.dueDate);
   const created = new Date(task.created);
