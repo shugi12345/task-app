@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, FlatList, StyleSheet } from 'react-native';
+import { View, TextInput, Button, FlatList, StyleSheet, Modal } from 'react-native';
 import Checkbox from 'expo-checkbox';
+import FloatingActionButton from '../components/FloatingActionButton';
 
 export default function TodoScreen() {
   const [items, setItems] = useState([]);
   const [text, setText] = useState('');
+  const [showForm, setShowForm] = useState(false);
 
   const addItem = () => {
     if (!text) return;
@@ -27,33 +29,53 @@ export default function TodoScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          placeholder="Add todo"
-          value={text}
-          onChangeText={setText}
-        />
-        <Button title="Add" onPress={addItem} />
-      </View>
       <FlatList
         data={items}
         keyExtractor={item => item.id}
         renderItem={renderItem}
       />
+      <FloatingActionButton onPress={() => setShowForm(true)} />
+
+      <Modal visible={showForm} animationType="slide" transparent>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalContent}>
+            <TextInput
+              style={styles.input}
+              placeholder="Add todo"
+              placeholderTextColor="#aaa"
+              value={text}
+              onChangeText={setText}
+            />
+            <Button title="Add" onPress={() => { addItem(); setShowForm(false); }} />
+            <Button title="Cancel" onPress={() => setShowForm(false)} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  form: { marginBottom: 16 },
+  container: { flex: 1, padding: 16, backgroundColor: '#121212' },
   input: {
-    borderColor: '#ccc',
+    borderColor: '#444',
     borderWidth: 1,
     marginBottom: 8,
     padding: 8,
     borderRadius: 4,
+    color: '#fff',
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#1c1c1c',
+    padding: 16,
+    borderRadius: 8,
+    width: '90%',
   },
   item: {
     flexDirection: 'row',
