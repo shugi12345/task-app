@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, FlatList, StyleSheet, Modal } from 'react-native';
+import { View, TextInput, Button, FlatList, StyleSheet, Modal, Animated } from 'react-native';
 import Checkbox from 'expo-checkbox';
 import FloatingActionButton from '../components/FloatingActionButton';
 
@@ -18,14 +18,22 @@ export default function TodoScreen() {
     setItems(items.filter(i => i.id !== id));
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Checkbox value={false} onValueChange={() => toggleItem(item.id)} />
-      <View style={styles.itemTextContainer}>
-        <TextInput value={item.text} editable={false} style={styles.itemText} />
-      </View>
-    </View>
-  );
+  const renderItem = ({ item }) => {
+    const anim = React.useRef(new Animated.Value(1)).current;
+    return (
+      <Animated.View style={[styles.item, { opacity: anim, transform: [{ scale: anim }] }]}>
+        <Checkbox
+          value={false}
+          onValueChange={() => {
+            Animated.timing(anim, { toValue: 0, duration: 300, useNativeDriver: true }).start(() => toggleItem(item.id));
+          }}
+        />
+        <View style={styles.itemTextContainer}>
+          <TextInput value={item.text} editable={false} style={styles.itemText} />
+        </View>
+      </Animated.View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -58,12 +66,12 @@ export default function TodoScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#121212' },
+  container: { flex: 1, padding: 20, backgroundColor: '#121212' },
   input: {
     borderColor: '#444',
     borderWidth: 1,
-    marginBottom: 8,
-    padding: 8,
+    marginBottom: 12,
+    padding: 10,
     borderRadius: 4,
     color: '#fff',
   },
@@ -82,11 +90,16 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 8,
   },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    backgroundColor: '#1e1e1e',
+    marginVertical: 6,
+    borderRadius: 8,
   },
   itemTextContainer: {
     flex: 1,

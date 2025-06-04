@@ -2,7 +2,8 @@
 
 This repository contains a simple cross-platform mobile app built with Expo
 (React Native). The application allows you to track tasks with estimated time
-to complete, urgency level, due dates and a simple TODO list.
+to complete, urgency level, due dates and a simple TODO list. It now uses a
+custom slider for selecting duration and due dates.
 
 ## Prerequisites
 - [Node.js](https://nodejs.org/) 18+

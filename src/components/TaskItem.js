@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 import Checkbox from 'expo-checkbox';
 
 function colorFor(level) {
@@ -23,10 +23,18 @@ function computeUrgency(task) {
 
 export default function TaskItem({ task, onComplete }) {
   const [checked, setChecked] = React.useState(false);
+  const anim = React.useRef(new Animated.Value(1)).current;
   const urgency = computeUrgency(task);
+
+  React.useEffect(() => {
+    if (checked) {
+      Animated.timing(anim, { toValue: 0, duration: 300, useNativeDriver: true }).start(() => onComplete());
+    }
+  }, [checked]);
+
   return (
-    <View style={styles.row}>
-      <Checkbox value={checked} onValueChange={(v) => { setChecked(v); if (v) onComplete(); }} />
+    <Animated.View style={[styles.row, { opacity: anim, transform: [{ translateX: anim.interpolate({ inputRange: [0,1], outputRange: [50,0] }) }] }]}>
+      <Checkbox value={checked} onValueChange={setChecked} />
       <View style={styles.info}>
         <Text style={styles.title}>{task.title}</Text>
         <Text style={styles.duration}>{task.duration}</Text>
@@ -42,7 +50,7 @@ export default function TaskItem({ task, onComplete }) {
           />
         ))}
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -50,9 +58,11 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
-    borderBottomColor: '#333',
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    backgroundColor: '#1e1e1e',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    marginVertical: 6,
   },
   info: {
     flex: 1,
@@ -72,9 +82,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 1,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginHorizontal: 2,
   },
 });
