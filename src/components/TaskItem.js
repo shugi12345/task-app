@@ -3,10 +3,8 @@ import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native
 import Checkbox from 'expo-checkbox';
 
 function colorFor(level) {
-  const ratio = (level - 1) / 4;
-  const r = Math.round(255 * ratio);
-  const g = Math.round(200 * (1 - ratio));
-  return `rgb(${r}, ${g}, 0)`;
+  const hue = 120 - (level - 1) * 30; // 1 -> green, 5 -> red
+  return `hsl(${hue}, 100%, 50%)`;
 }
 
 function computeUrgency(task) {
@@ -40,13 +38,17 @@ export default function TaskItem({ task, onComplete, onPress }) {
           {
             opacity: anim,
             transform: [
-              { translateX: anim.interpolate({ inputRange: [0, 1], outputRange: [-50, 0] }) },
-              { scale: anim },
+              { translateX: anim.interpolate({ inputRange: [0, 1], outputRange: [-200, 0] }) },
             ],
           },
         ]}
       >
-        <Checkbox value={checked} onValueChange={setChecked} />
+        <Checkbox
+          value={checked}
+          onValueChange={setChecked}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={styles.checkbox}
+        />
         <View style={styles.info}>
           <Text style={styles.title}>{task.title}</Text>
           <Text style={styles.duration}>{task.duration}</Text>
@@ -99,5 +101,8 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
     marginHorizontal: 2,
+  },
+  checkbox: {
+    transform: [{ scale: 1.2 }],
   },
 });
