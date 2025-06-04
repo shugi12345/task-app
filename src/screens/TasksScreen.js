@@ -108,6 +108,7 @@ export default function TasksScreen() {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.screenTitle}>Tasks</Text>
       <FlatList
         data={tasks}
         keyExtractor={item => item.id}
@@ -202,6 +203,12 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     width: '80%',
+  },
+  screenTitle: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 12,
   },
   modalLabel: {
     color: '#fff',

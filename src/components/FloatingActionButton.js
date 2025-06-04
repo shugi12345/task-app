@@ -12,8 +12,8 @@ export default function FloatingActionButton({ onPress }) {
 const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
-    right: 16,
-    bottom: 16,
+    right: 24,
+    bottom: 24,
     backgroundColor: '#bb86fc',
     width: 56,
     height: 56,

@@ -25,6 +25,7 @@ export default function TodoScreen() {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.screenTitle}>Todo</Text>
       <FlatList
         data={items}
         keyExtractor={item => item.id}
@@ -74,6 +75,12 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     width: '90%',
+  },
+  screenTitle: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 12,
   },
   buttonRow: {
     flexDirection: 'row',
