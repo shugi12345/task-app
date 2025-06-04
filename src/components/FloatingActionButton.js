@@ -1,0 +1,30 @@
+import React from 'react';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+
+export default function FloatingActionButton({ onPress }) {
+  return (
+    <TouchableOpacity style={styles.fab} onPress={onPress}>
+      <Text style={styles.fabText}>+</Text>
+    </TouchableOpacity>
+  );
+}
+
+const styles = StyleSheet.create({
+  fab: {
+    position: 'absolute',
+    right: 16,
+    bottom: 16,
+    backgroundColor: '#bb86fc',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4,
+  },
+  fabText: {
+    color: '#fff',
+    fontSize: 32,
+    lineHeight: 32,
+  },
+});

@@ -2,6 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Checkbox from 'expo-checkbox';
 
+function colorFor(level) {
+  const ratio = (level - 1) / 4;
+  const r = Math.round(255 * ratio);
+  const g = Math.round(200 * (1 - ratio));
+  return `rgb(${r}, ${g}, 0)`;
+}
+
 function computeUrgency(task) {
   if (!task.dueDate) return task.urgency;
   const due = new Date(task.dueDate);
@@ -25,7 +32,9 @@ export default function TaskItem({ task, onComplete }) {
         <Text style={styles.duration}>{task.duration}</Text>
       </View>
       <View style={styles.urgency}>
-        <Text>{'\u2B24'.repeat(urgency)}</Text>
+        {[1,2,3,4,5].map(l => (
+          <View key={l} style={[styles.dot, {backgroundColor: l <= urgency ? colorFor(l) : '#333'}]} />
+        ))}
       </View>
     </View>
   );
@@ -36,6 +45,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 8,
+    borderBottomColor: '#333',
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   info: {
     flex: 1,
@@ -44,12 +55,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#fff',
   },
   duration: {
     fontSize: 12,
-    color: '#666',
+    color: '#aaa',
   },
   urgency: {
     marginLeft: 8,
+    flexDirection: 'row',
+  },
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginHorizontal: 1,
   },
 });

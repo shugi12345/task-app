@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import TaskItem from '../components/TaskItem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import FloatingActionButton from '../components/FloatingActionButton';
+import UrgencyPicker from '../components/UrgencyPicker';
 
 export default function TasksScreen() {
   const [tasks, setTasks] = useState([]);
@@ -9,6 +12,9 @@ export default function TasksScreen() {
   const [duration, setDuration] = useState('');
   const [urgency, setUrgency] = useState(1);
   const [dueDate, setDueDate] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showDurationPicker, setShowDurationPicker] = useState(false);
 
   const addTask = () => {
     if (!title) return;
@@ -26,6 +32,7 @@ export default function TasksScreen() {
     setDuration('');
     setUrgency(1);
     setDueDate('');
+    setShowForm(false);
     AsyncStorage.setItem('tasks', JSON.stringify(newTasks));
   };
 
@@ -41,52 +48,88 @@ export default function TasksScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.form}>
-        <TextInput
-          placeholder="Task title"
-          value={title}
-          onChangeText={setTitle}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Duration (e.g. 2h)"
-          value={duration}
-          onChangeText={setDuration}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Urgency (1-5)"
-          keyboardType="numeric"
-          value={String(urgency)}
-          onChangeText={(v) => setUrgency(v)}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Due date (YYYY-MM-DD)"
-          value={dueDate}
-          onChangeText={setDueDate}
-          style={styles.input}
-        />
-        <Button title="Add" onPress={addTask} />
-      </View>
-
       <FlatList
         data={tasks}
         keyExtractor={item => item.id}
         renderItem={renderItem}
       />
+      <FloatingActionButton onPress={() => setShowForm(true)} />
+
+      <Modal visible={showForm} animationType="slide" transparent>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalContent}>
+            <TextInput
+              placeholder="Task title"
+              placeholderTextColor="#aaa"
+              value={title}
+              onChangeText={setTitle}
+              style={styles.input}
+            />
+            <TouchableOpacity onPress={() => setShowDurationPicker(true)}>
+              <Text style={styles.input}>{duration || 'Pick duration'}</Text>
+            </TouchableOpacity>
+            {showDurationPicker && (
+              <DateTimePicker
+                value={new Date()}
+                mode="time"
+                onChange={(e, d) => {
+                  setShowDurationPicker(false);
+                  if (d) {
+                    const h = d.getHours().toString().padStart(2, '0');
+                    const m = d.getMinutes().toString().padStart(2, '0');
+                    setDuration(`${h}:${m}`);
+                  }
+                }}
+              />
+            )}
+
+            <UrgencyPicker value={urgency} onChange={setUrgency} />
+
+            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+              <Text style={styles.input}>{dueDate || 'Pick due date'}</Text>
+            </TouchableOpacity>
+            {showDatePicker && (
+              <DateTimePicker
+                value={dueDate ? new Date(dueDate) : new Date()}
+                mode="date"
+                onChange={(e, d) => {
+                  setShowDatePicker(false);
+                  if (d) {
+                    const dateStr = d.toISOString().slice(0,10);
+                    setDueDate(dateStr);
+                  }
+                }}
+              />
+            )}
+            <Button title="Add" onPress={addTask} />
+            <Button title="Cancel" onPress={() => setShowForm(false)} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  form: { marginBottom: 16 },
+  container: { flex: 1, padding: 16, backgroundColor: '#121212' },
   input: {
-    borderColor: '#ccc',
+    borderColor: '#444',
     borderWidth: 1,
     marginBottom: 8,
     padding: 8,
     borderRadius: 4,
+    color: '#fff',
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#1c1c1c',
+    padding: 16,
+    borderRadius: 8,
+    width: '90%',
   },
 });
