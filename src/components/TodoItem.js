@@ -3,19 +3,29 @@ import { Animated, StyleSheet, TextInput, View } from 'react-native';
 import Checkbox from 'expo-checkbox';
 
 export default function TodoItem({ item, onToggle }) {
-  const anim = React.useRef(new Animated.Value(1)).current;
+  const anim = React.useRef(new Animated.Value(0)).current;
 
   const handleToggle = () => {
     Animated.timing(anim, {
-      toValue: 0,
+      toValue: 1,
       duration: 300,
       useNativeDriver: true,
     }).start(() => onToggle());
   };
 
   return (
-    <Animated.View style={[styles.item, { opacity: anim, transform: [{ scale: anim }] }]}>
-      <Checkbox value={false} onValueChange={handleToggle} />
+    <Animated.View
+      style={[
+        styles.item,
+        {
+          opacity: anim.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
+          transform: [
+            { translateX: anim.interpolate({ inputRange: [0, 1], outputRange: [0, -100] }) },
+          ],
+        },
+      ]}
+    >
+      <Checkbox style={styles.checkbox} value={false} onValueChange={handleToggle} />
       <View style={styles.itemTextContainer}>
         <TextInput value={item.text} editable={false} style={styles.itemText} />
       </View>
@@ -40,5 +50,9 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 16,
     color: '#fff',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
   },
 });

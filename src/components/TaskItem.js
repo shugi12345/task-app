@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   checkbox: {
-    width: 28,
-    height: 28,
+    width: 20,
+    height: 20,
   },
 });

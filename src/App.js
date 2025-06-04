@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import TasksScreen from './screens/TasksScreen';
 import TodoScreen from './screens/TodoScreen';
 
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
 const MyTheme = {
   ...DarkTheme,
   colors: {
@@ -16,7 +16,7 @@ const MyTheme = {
 export default function App() {
   return (
     <NavigationContainer theme={MyTheme}>
-      <Tab.Navigator>
+      <Tab.Navigator tabBarPosition="bottom" swipeEnabled>
         <Tab.Screen name="Tasks" component={TasksScreen} />
         <Tab.Screen name="Todo" component={TodoScreen} />
       </Tab.Navigator>
