@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, FlatList, StyleSheet, Modal, Animated } from 'react-native';
-import Checkbox from 'expo-checkbox';
+import { View, TextInput, Button, FlatList, StyleSheet, Modal } from 'react-native';
+import TodoItem from '../components/TodoItem';
 import FloatingActionButton from '../components/FloatingActionButton';
 
 export default function TodoScreen() {
@@ -18,22 +18,9 @@ export default function TodoScreen() {
     setItems(items.filter(i => i.id !== id));
   };
 
-  const renderItem = ({ item }) => {
-    const anim = React.useRef(new Animated.Value(1)).current;
-    return (
-      <Animated.View style={[styles.item, { opacity: anim, transform: [{ scale: anim }] }]}>
-        <Checkbox
-          value={false}
-          onValueChange={() => {
-            Animated.timing(anim, { toValue: 0, duration: 300, useNativeDriver: true }).start(() => toggleItem(item.id));
-          }}
-        />
-        <View style={styles.itemTextContainer}>
-          <TextInput value={item.text} editable={false} style={styles.itemText} />
-        </View>
-      </Animated.View>
-    );
-  };
+  const renderItem = ({ item }) => (
+    <TodoItem item={item} onToggle={() => toggleItem(item.id)} />
+  );
 
   return (
     <View style={styles.container}>
@@ -91,22 +78,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 8,
-  },
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    backgroundColor: '#1e1e1e',
-    marginVertical: 6,
-    borderRadius: 8,
-  },
-  itemTextContainer: {
-    flex: 1,
-    marginLeft: 8,
-  },
-  itemText: {
-    fontSize: 16,
-    color: '#fff',
   },
 });

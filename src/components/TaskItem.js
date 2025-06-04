@@ -33,7 +33,16 @@ export default function TaskItem({ task, onComplete }) {
   }, [checked]);
 
   return (
-    <Animated.View style={[styles.row, { opacity: anim, transform: [{ translateX: anim.interpolate({ inputRange: [0,1], outputRange: [50,0] }) }] }]}>
+    <Animated.View style={[
+      styles.row,
+      {
+        opacity: anim,
+        transform: [
+          { translateX: anim.interpolate({ inputRange: [0,1], outputRange: [-50,0] }) },
+          { scale: anim }
+        ],
+      },
+    ]}>
       <Checkbox value={checked} onValueChange={setChecked} />
       <View style={styles.info}>
         <Text style={styles.title}>{task.title}</Text>
