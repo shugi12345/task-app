@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, FlatList, StyleSheet, Modal, TouchableOpacity, LayoutAnimation } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import TaskItem from '../components/TaskItem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FloatingActionButton from '../components/FloatingActionButton';
@@ -15,12 +16,6 @@ function formatDuration(mins) {
   return parts.join(' ') || '0m';
 }
 
-function dateFromDays(days) {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  return d;
-}
-
 function formatDate(d) {
   return d.toISOString().slice(0, 10);
 }
@@ -30,7 +25,7 @@ export default function TasksScreen() {
   const [title, setTitle] = useState('');
   const [durationMinutes, setDurationMinutes] = useState(0);
   const [urgency, setUrgency] = useState(1);
-  const [dueInDays, setDueInDays] = useState(0);
+  const [dueDate, setDueDate] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showDurationPicker, setShowDurationPicker] = useState(false);
@@ -42,7 +37,7 @@ export default function TasksScreen() {
       title,
       duration: formatDuration(durationMinutes),
       urgency: Number(urgency),
-      dueDate: dueInDays ? new Date(Date.now() + dueInDays * 24 * 60 * 60 * 1000) : null,
+      dueDate,
       created: new Date(),
     };
     const newTasks = [...tasks, task];
@@ -50,7 +45,7 @@ export default function TasksScreen() {
     setTitle('');
     setDurationMinutes(0);
     setUrgency(1);
-    setDueInDays(0);
+    setDueDate(null);
     setShowForm(false);
     AsyncStorage.setItem('tasks', JSON.stringify(newTasks));
   };
@@ -110,25 +105,18 @@ export default function TasksScreen() {
             <UrgencyPicker value={urgency} onChange={setUrgency} />
 
             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-              <Text style={styles.input}>{dueInDays ? formatDate(dateFromDays(dueInDays)) : 'Pick due date'}</Text>
+              <Text style={styles.input}>{dueDate ? formatDate(dueDate) : 'Pick due date'}</Text>
             </TouchableOpacity>
             {showDatePicker && (
-              <Modal transparent animationType="fade">
-                <View style={styles.modalBackdrop}>
-                  <View style={styles.pickerModal}>
-                    <Text style={styles.modalLabel}>{formatDate(dateFromDays(dueInDays))}</Text>
-                    <Slider
-                      minimumValue={0}
-                      maximumValue={30}
-                      step={1}
-                      value={dueInDays}
-                      onValueChange={setDueInDays}
-                      minimumTrackTintColor="#bb86fc"
-                    />
-                    <Button title="Done" color="#bb86fc" onPress={() => setShowDatePicker(false)} />
-                  </View>
-                </View>
-              </Modal>
+              <DateTimePicker
+                value={dueDate || new Date()}
+                mode="date"
+                display="calendar"
+                onChange={(e, selected) => {
+                  if (selected) setDueDate(selected);
+                  setShowDatePicker(false);
+                }}
+              />
             )}
             <View style={styles.buttonRow}>
               <Button title="Add" color="#bb86fc" onPress={addTask} />
