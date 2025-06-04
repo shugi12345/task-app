@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, FlatList, StyleSheet, Modal } from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet, Modal } from 'react-native';
 import TodoItem from '../components/TodoItem';
 import FloatingActionButton from '../components/FloatingActionButton';
 import AppButton from '../components/AppButton';
