@@ -1,11 +1,17 @@
 import React from 'react';
-import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  TouchableOpacity,
+} from 'react-native';
 import Checkbox from 'expo-checkbox';
 
 function colorFor(level) {
   const ratio = (level - 1) / 4;
-  const r = Math.round(255 * ratio);
-  const g = Math.round(200 * (1 - ratio));
+  const r = Math.round(Math.min(255, 510 * ratio));
+  const g = Math.round(Math.min(255, 510 * (1 - ratio)));
   return `rgb(${r}, ${g}, 0)`;
 }
 
@@ -23,12 +29,16 @@ function computeUrgency(task) {
 
 export default function TaskItem({ task, onComplete, onPress }) {
   const [checked, setChecked] = React.useState(false);
-  const anim = React.useRef(new Animated.Value(1)).current;
+  const anim = React.useRef(new Animated.Value(0)).current;
   const urgency = computeUrgency(task);
 
   React.useEffect(() => {
     if (checked) {
-      Animated.timing(anim, { toValue: 0, duration: 300, useNativeDriver: true }).start(() => onComplete());
+      Animated.timing(anim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => onComplete());
     }
   }, [checked]);
 
@@ -38,15 +48,16 @@ export default function TaskItem({ task, onComplete, onPress }) {
         style={[
           styles.row,
           {
-            opacity: anim,
+            opacity: anim.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
             transform: [
-              { translateX: anim.interpolate({ inputRange: [0, 1], outputRange: [-50, 0] }) },
-              { scale: anim },
+              {
+                translateX: anim.interpolate({ inputRange: [0, 1], outputRange: [0, -100] }),
+              },
             ],
           },
         ]}
       >
-        <Checkbox value={checked} onValueChange={setChecked} />
+        <Checkbox style={styles.checkbox} value={checked} onValueChange={setChecked} />
         <View style={styles.info}>
           <Text style={styles.title}>{task.title}</Text>
           <Text style={styles.duration}>{task.duration}</Text>
@@ -99,5 +110,9 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
     marginHorizontal: 2,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
   },
 });

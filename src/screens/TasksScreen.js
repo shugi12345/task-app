@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, Modal, TouchableOpacity, LayoutAnimation } from 'react-native';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+  LayoutAnimation,
+} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import TaskItem from '../components/TaskItem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import FloatingActionButton from '../components/FloatingActionButton';
 import UrgencyPicker from '../components/UrgencyPicker';
 import AppButton from '../components/AppButton';
 import Slider from '@react-native-community/slider';
@@ -36,7 +44,7 @@ function formatDate(d) {
   return d.toISOString().slice(0, 10);
 }
 
-export default function TasksScreen() {
+const TasksScreen = forwardRef((props, ref) => {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState('');
   const [durationMinutes, setDurationMinutes] = useState(0);
@@ -46,6 +54,13 @@ export default function TasksScreen() {
   const [editingTask, setEditingTask] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showDurationPicker, setShowDurationPicker] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    openAdd: () => {
+      setEditingTask(null);
+      setShowForm(true);
+    },
+  }));
 
   const saveTask = () => {
     if (!title) return;
@@ -113,7 +128,6 @@ export default function TasksScreen() {
         keyExtractor={item => item.id}
         renderItem={renderItem}
       />
-      <FloatingActionButton onPress={() => setShowForm(true)} />
 
       <Modal visible={showForm} animationType="slide" transparent onRequestClose={() => setShowForm(false)}>
         <View style={styles.modalBackdrop}>
@@ -151,7 +165,9 @@ export default function TasksScreen() {
             <UrgencyPicker value={urgency} onChange={setUrgency} />
 
             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-              <Text style={styles.input}>{dueDate ? formatDate(dueDate) : 'Pick due date'}</Text>
+              <Text style={[styles.input, styles.dateInput]}>
+                {dueDate ? formatDate(dueDate) : 'Pick due date'}
+              </Text>
             </TouchableOpacity>
             {showDatePicker && (
               <DateTimePicker
@@ -173,7 +189,9 @@ export default function TasksScreen() {
       </Modal>
     </View>
   );
-}
+});
+
+export default TasksScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#121212' },
@@ -202,6 +220,9 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     width: '80%',
+  },
+  dateInput: {
+    marginTop: 20,
   },
   modalLabel: {
     color: '#fff',
