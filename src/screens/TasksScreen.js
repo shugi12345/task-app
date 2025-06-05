@@ -56,6 +56,8 @@ const TasksScreen = forwardRef((props, ref) => {
   const [showDurationPicker, setShowDurationPicker] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
   const [sortMode, setSortMode] = useState('priority');
+  const [deletedTasks, setDeletedTasks] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
 
   const sortTasks = (list, mode = sortMode) => {
     const sorted = [...list];
@@ -74,6 +76,15 @@ const TasksScreen = forwardRef((props, ref) => {
     }
     return sorted;
   };
+
+  useEffect(() => {
+    (async () => {
+      const saved = await AsyncStorage.getItem('tasks');
+      if (saved) setTasks(sortTasks(JSON.parse(saved)));
+      const removed = await AsyncStorage.getItem('deletedTasks');
+      if (removed) setDeletedTasks(JSON.parse(removed));
+    })();
+  }, []);
 
   useEffect(() => {
     setTasks((prev) => sortTasks(prev, sortMode));
@@ -128,9 +139,32 @@ const TasksScreen = forwardRef((props, ref) => {
 
   const completeTask = (id) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    const removed = tasks.find(t => t.id === id);
     const newTasks = sortTasks(tasks.filter(t => t.id !== id));
     setTasks(newTasks);
     AsyncStorage.setItem('tasks', JSON.stringify(newTasks));
+    if (removed) {
+      const newDeleted = [removed, ...deletedTasks];
+      setDeletedTasks(newDeleted);
+      AsyncStorage.setItem('deletedTasks', JSON.stringify(newDeleted));
+    }
+  };
+
+  const restoreTask = (id) => {
+    const item = deletedTasks.find(t => t.id === id);
+    if (!item) return;
+    const newDeleted = deletedTasks.filter(t => t.id !== id);
+    setDeletedTasks(newDeleted);
+    AsyncStorage.setItem('deletedTasks', JSON.stringify(newDeleted));
+    const newTasks = sortTasks([...tasks, item]);
+    setTasks(newTasks);
+    AsyncStorage.setItem('tasks', JSON.stringify(newTasks));
+  };
+
+  const deleteForever = (id) => {
+    const newDeleted = deletedTasks.filter(t => t.id !== id);
+    setDeletedTasks(newDeleted);
+    AsyncStorage.setItem('deletedTasks', JSON.stringify(newDeleted));
   };
 
   const startEdit = (task) => {
@@ -150,18 +184,26 @@ const TasksScreen = forwardRef((props, ref) => {
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <Text style={styles.screenTitle}>Tasks</Text>
-        <AppButton
-          style={styles.sortHeaderButton}
-          textStyle={styles.sortHeaderButtonText}
-          title={`Sort: ${
-            sortMode === 'priority'
-              ? 'Priority'
-              : sortMode === 'alpha'
-              ? 'A-Z'
-              : 'Added latest'
-          }`}
-          onPress={() => setShowSortModal(true)}
-        />
+        <View style={styles.headerButtons}>
+          <AppButton
+            style={styles.sortHeaderButton}
+            textStyle={styles.sortHeaderButtonText}
+            title="History"
+            onPress={() => setShowHistory(true)}
+          />
+          <AppButton
+            style={styles.sortHeaderButton}
+            textStyle={styles.sortHeaderButtonText}
+            title={`Sort: ${
+              sortMode === 'priority'
+                ? 'Priority'
+                : sortMode === 'alpha'
+                ? 'A-Z'
+                : 'Added latest'
+            }`}
+            onPress={() => setShowSortModal(true)}
+          />
+        </View>
       </View>
       <FlatList
         data={tasks}
@@ -229,6 +271,36 @@ const TasksScreen = forwardRef((props, ref) => {
       </Modal>
 
       <Modal
+        visible={showHistory}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowHistory(false)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.historyModal}>
+            <Text style={styles.modalLabel}>Deleted tasks</Text>
+            <FlatList
+              data={deletedTasks}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <View style={styles.historyItem}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.historyTitle}>{item.title}</Text>
+                  </View>
+                  <View style={styles.buttonRow}>
+                    <AppButton title="Restore" onPress={() => restoreTask(item.id)} />
+                    <AppButton title="Delete" onPress={() => deleteForever(item.id)} />
+                  </View>
+                </View>
+              )}
+              ListEmptyComponent={<Text style={styles.emptyText}>No deleted tasks</Text>}
+            />
+            <AppButton title="Close" onPress={() => setShowHistory(false)} />
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
         visible={showSortModal}
         animationType="fade"
         transparent
@@ -282,6 +354,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 24,
     fontWeight: 'bold',
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   sortHeaderButton: {
     backgroundColor: 'transparent',
@@ -343,5 +419,30 @@ const styles = StyleSheet.create({
   },
   sortOption: {
     marginVertical: 4,
+  },
+  historyModal: {
+    backgroundColor: '#1c1c1c',
+    padding: 16,
+    borderRadius: 8,
+    width: '90%',
+    maxHeight: '80%',
+  },
+  historyItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1e1e1e',
+    padding: 8,
+    marginVertical: 4,
+    borderRadius: 8,
+  },
+  historyTitle: {
+    color: '#fff',
+    fontSize: 16,
+    marginRight: 8,
+  },
+  emptyText: {
+    color: '#fff',
+    textAlign: 'center',
+    marginVertical: 8,
   },
 });
