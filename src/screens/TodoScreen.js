@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, Modal } from 'react-native';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import {
+  View,
+  TextInput,
+  FlatList,
+  StyleSheet,
+  Modal,
+} from 'react-native';
 import TodoItem from '../components/TodoItem';
-import FloatingActionButton from '../components/FloatingActionButton';
 import AppButton from '../components/AppButton';
 
-export default function TodoScreen() {
+const TodoScreen = forwardRef((props, ref) => {
   const [items, setItems] = useState([]);
   const [text, setText] = useState('');
   const [showForm, setShowForm] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    openAdd: () => setShowForm(true),
+  }));
 
   const addItem = () => {
     if (!text) return;
@@ -25,14 +34,11 @@ export default function TodoScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.appName}>Task Rabbit</Text>
-      <Text style={styles.screenTitle}>Todo</Text>
       <FlatList
         data={items}
         keyExtractor={item => item.id}
         renderItem={renderItem}
       />
-      <FloatingActionButton onPress={() => setShowForm(true)} />
 
       <Modal visible={showForm} animationType="slide" transparent onRequestClose={() => setShowForm(false)}>
         <View style={styles.modalBackdrop}>
@@ -53,10 +59,12 @@ export default function TodoScreen() {
       </Modal>
     </View>
   );
-}
+});
+
+export default TodoScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, paddingTop: 40, backgroundColor: '#121212' },
+  container: { flex: 1, padding: 20, backgroundColor: '#121212' },
   input: {
     borderColor: '#444',
     borderWidth: 1,
@@ -76,18 +84,6 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     width: '90%',
-  },
-  appName: {
-    color: '#bb86fc',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  screenTitle: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 12,
   },
   buttonRow: {
     flexDirection: 'row',
