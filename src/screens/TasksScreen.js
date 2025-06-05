@@ -180,7 +180,7 @@ export default function TasksScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#121212' },
+  container: { flex: 1, padding: 20, paddingTop: 40, backgroundColor: '#121212' },
   input: {
     borderColor: '#444',
     borderWidth: 1,
