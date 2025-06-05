@@ -42,7 +42,6 @@ export default function App() {
       <View style={styles.root}>
         <View style={styles.header}>
           <Text style={styles.appName}>Task Rabbit</Text>
-          <Text style={styles.screenTitle}>{active}</Text>
         </View>
         <View style={{ flex: 1 }}>
           <Tab.Navigator tabBarPosition="bottom" swipeEnabled>
@@ -68,11 +67,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 4,
-  },
-  screenTitle: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 12,
   },
 });

@@ -1,6 +1,7 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import {
   View,
+  Text,
   TextInput,
   FlatList,
   StyleSheet,
@@ -34,6 +35,7 @@ const TodoScreen = forwardRef((props, ref) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.screenTitle}>Todo</Text>
       <FlatList
         data={items}
         keyExtractor={item => item.id}
@@ -65,6 +67,12 @@ export default TodoScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#121212' },
+  screenTitle: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
   input: {
     borderColor: '#444',
     borderWidth: 1,

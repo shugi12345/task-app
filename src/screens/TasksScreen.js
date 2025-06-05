@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import {
   View,
   Text,
@@ -54,6 +54,30 @@ const TasksScreen = forwardRef((props, ref) => {
   const [editingTask, setEditingTask] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showDurationPicker, setShowDurationPicker] = useState(false);
+  const [showSortModal, setShowSortModal] = useState(false);
+  const [sortMode, setSortMode] = useState('priority');
+
+  const sortTasks = (list, mode = sortMode) => {
+    const sorted = [...list];
+    switch (mode) {
+      case 'alpha':
+        sorted.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case 'added':
+        sorted.sort((a, b) => new Date(b.created) - new Date(a.created));
+        break;
+      default:
+        sorted.sort((a, b) => {
+          if (b.urgency !== a.urgency) return b.urgency - a.urgency;
+          return a.title.localeCompare(b.title);
+        });
+    }
+    return sorted;
+  };
+
+  useEffect(() => {
+    setTasks((prev) => sortTasks(prev, sortMode));
+  }, [sortMode]);
 
   useImperativeHandle(ref, () => ({
     openAdd: () => {
@@ -77,8 +101,9 @@ const TasksScreen = forwardRef((props, ref) => {
             }
           : t
       );
-      setTasks(updated);
-      AsyncStorage.setItem('tasks', JSON.stringify(updated));
+      const sorted = sortTasks(updated);
+      setTasks(sorted);
+      AsyncStorage.setItem('tasks', JSON.stringify(sorted));
     } else {
       const task = {
         id: Date.now().toString(),
@@ -88,7 +113,7 @@ const TasksScreen = forwardRef((props, ref) => {
         dueDate,
         created: new Date(),
       };
-      const newTasks = [...tasks, task];
+      const newTasks = sortTasks([...tasks, task]);
       setTasks(newTasks);
       AsyncStorage.setItem('tasks', JSON.stringify(newTasks));
     }
@@ -103,7 +128,7 @@ const TasksScreen = forwardRef((props, ref) => {
 
   const completeTask = (id) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    const newTasks = tasks.filter(t => t.id !== id);
+    const newTasks = sortTasks(tasks.filter(t => t.id !== id));
     setTasks(newTasks);
     AsyncStorage.setItem('tasks', JSON.stringify(newTasks));
   };
@@ -123,6 +148,21 @@ const TasksScreen = forwardRef((props, ref) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.headerRow}>
+        <Text style={styles.screenTitle}>Tasks</Text>
+        <AppButton
+          style={styles.sortHeaderButton}
+          textStyle={styles.sortHeaderButtonText}
+          title={`Sort: ${
+            sortMode === 'priority'
+              ? 'Priority'
+              : sortMode === 'alpha'
+              ? 'A-Z'
+              : 'Added latest'
+          }`}
+          onPress={() => setShowSortModal(true)}
+        />
+      </View>
       <FlatList
         data={tasks}
         keyExtractor={item => item.id}
@@ -187,6 +227,43 @@ const TasksScreen = forwardRef((props, ref) => {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        visible={showSortModal}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setShowSortModal(false)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.sortModal}>
+            <Text style={styles.modalLabel}>Sort tasks by:</Text>
+            <AppButton
+              style={styles.sortOption}
+              title="Priority"
+              onPress={() => {
+                setSortMode('priority');
+                setShowSortModal(false);
+              }}
+            />
+            <AppButton
+              style={styles.sortOption}
+              title="A-Z"
+              onPress={() => {
+                setSortMode('alpha');
+                setShowSortModal(false);
+              }}
+            />
+            <AppButton
+              style={styles.sortOption}
+              title="Added latest"
+              onPress={() => {
+                setSortMode('added');
+                setShowSortModal(false);
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 });
@@ -195,6 +272,29 @@ export default TasksScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#121212' },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  screenTitle: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  sortHeaderButton: {
+    backgroundColor: 'transparent',
+    borderColor: '#bb86fc',
+    borderWidth: 1,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+  },
+  sortHeaderButtonText: {
+    color: '#bb86fc',
+    fontSize: 14,
+  },
   input: {
     borderColor: '#444',
     borderWidth: 1,
@@ -234,5 +334,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 8,
+  },
+  sortModal: {
+    backgroundColor: '#1c1c1c',
+    padding: 16,
+    borderRadius: 8,
+    width: '80%',
+  },
+  sortOption: {
+    marginVertical: 4,
   },
 });
