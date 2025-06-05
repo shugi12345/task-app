@@ -44,8 +44,7 @@ function formatDate(d) {
   return d.toISOString().slice(0, 10);
 }
 
-const TasksScreen = forwardRef(
-  ({ sortMode = 'priority', onChangeSortMode = () => {} }, ref) => {
+const TasksScreen = forwardRef((props, ref) => {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState('');
   const [durationMinutes, setDurationMinutes] = useState(0);
@@ -56,6 +55,7 @@ const TasksScreen = forwardRef(
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showDurationPicker, setShowDurationPicker] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
+  const [sortMode, setSortMode] = useState('priority');
 
   const sortTasks = (list, mode = sortMode) => {
     const sorted = [...list];
@@ -84,7 +84,6 @@ const TasksScreen = forwardRef(
       setEditingTask(null);
       setShowForm(true);
     },
-    openSort: () => setShowSortModal(true),
   }));
 
   const saveTask = () => {
@@ -149,6 +148,21 @@ const TasksScreen = forwardRef(
 
   return (
     <View style={styles.container}>
+      <View style={styles.headerRow}>
+        <Text style={styles.screenTitle}>Tasks</Text>
+        <AppButton
+          style={styles.sortHeaderButton}
+          textStyle={styles.sortHeaderButtonText}
+          title={`Sort: ${
+            sortMode === 'priority'
+              ? 'Priority'
+              : sortMode === 'alpha'
+              ? 'A-Z'
+              : 'Added latest'
+          }`}
+          onPress={() => setShowSortModal(true)}
+        />
+      </View>
       <FlatList
         data={tasks}
         keyExtractor={item => item.id}
@@ -227,7 +241,7 @@ const TasksScreen = forwardRef(
               style={styles.sortOption}
               title="Priority"
               onPress={() => {
-                onChangeSortMode('priority');
+                setSortMode('priority');
                 setShowSortModal(false);
               }}
             />
@@ -235,7 +249,7 @@ const TasksScreen = forwardRef(
               style={styles.sortOption}
               title="A-Z"
               onPress={() => {
-                onChangeSortMode('alpha');
+                setSortMode('alpha');
                 setShowSortModal(false);
               }}
             />
@@ -243,7 +257,7 @@ const TasksScreen = forwardRef(
               style={styles.sortOption}
               title="Added latest"
               onPress={() => {
-                onChangeSortMode('added');
+                setSortMode('added');
                 setShowSortModal(false);
               }}
             />
@@ -258,6 +272,29 @@ export default TasksScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#121212' },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  screenTitle: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  sortHeaderButton: {
+    backgroundColor: 'transparent',
+    borderColor: '#bb86fc',
+    borderWidth: 1,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+  },
+  sortHeaderButtonText: {
+    color: '#bb86fc',
+    fontSize: 14,
+  },
   input: {
     borderColor: '#444',
     borderWidth: 1,
