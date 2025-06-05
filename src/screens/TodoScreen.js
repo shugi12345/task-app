@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, FlatList, StyleSheet, Modal } from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet, Modal } from 'react-native';
 import TodoItem from '../components/TodoItem';
 import FloatingActionButton from '../components/FloatingActionButton';
 import AppButton from '../components/AppButton';
@@ -25,6 +25,8 @@ export default function TodoScreen() {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.appName}>Task Rabbit</Text>
+      <Text style={styles.screenTitle}>Todo</Text>
       <FlatList
         data={items}
         keyExtractor={item => item.id}
@@ -74,6 +76,18 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     width: '90%',
+  },
+  appName: {
+    color: '#bb86fc',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  screenTitle: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 12,
   },
   buttonRow: {
     flexDirection: 'row',

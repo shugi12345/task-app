@@ -108,6 +108,8 @@ export default function TasksScreen() {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.appName}>Task Rabbit</Text>
+      <Text style={styles.screenTitle}>Tasks</Text>
       <FlatList
         data={tasks}
         keyExtractor={item => item.id}
@@ -151,7 +153,9 @@ export default function TasksScreen() {
             <UrgencyPicker value={urgency} onChange={setUrgency} />
 
             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-              <Text style={styles.input}>{dueDate ? formatDate(dueDate) : 'Pick due date'}</Text>
+              <Text style={[styles.input, styles.dateInput]}>
+                {dueDate ? formatDate(dueDate) : 'Pick due date'}
+              </Text>
             </TouchableOpacity>
             {showDatePicker && (
               <DateTimePicker
@@ -202,6 +206,21 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     width: '80%',
+  },
+  dateInput: {
+    marginTop: 20,
+  },
+  appName: {
+    color: '#bb86fc',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  screenTitle: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 12,
   },
   modalLabel: {
     color: '#fff',
