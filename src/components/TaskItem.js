@@ -29,8 +29,18 @@ function computeUrgency(task) {
 
 export default function TaskItem({ task, onComplete, onPress }) {
   const [checked, setChecked] = React.useState(false);
-  const anim = React.useRef(new Animated.Value(0)).current;
+  const anim = React.useRef(new Animated.Value(task.animateIn ? -1 : 0)).current;
   const urgency = computeUrgency(task);
+
+  React.useEffect(() => {
+    if (task.animateIn) {
+      Animated.timing(anim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, []);
 
   React.useEffect(() => {
     if (checked) {
@@ -48,16 +58,21 @@ export default function TaskItem({ task, onComplete, onPress }) {
         style={[
           styles.row,
           {
-            opacity: anim.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
+            opacity: anim.interpolate({ inputRange: [-1, 0, 1], outputRange: [0, 1, 0] }),
             transform: [
               {
-                translateX: anim.interpolate({ inputRange: [0, 1], outputRange: [0, -100] }),
+                translateX: anim.interpolate({
+                  inputRange: [-1, 0, 1],
+                  outputRange: [-100, 0, -100],
+                }),
               },
             ],
           },
         ]}
       >
-        <Checkbox style={styles.checkbox} value={checked} onValueChange={setChecked} />
+        <TouchableOpacity onPress={() => setChecked(!checked)} style={styles.checkboxWrapper}>
+          <Checkbox style={styles.checkbox} value={checked} onValueChange={setChecked} />
+        </TouchableOpacity>
         <View style={styles.info}>
           <Text style={styles.title}>{task.title}</Text>
           <Text style={styles.duration}>{task.duration}</Text>
@@ -118,6 +133,9 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
     marginHorizontal: 2,
+  },
+  checkboxWrapper: {
+    padding: 8,
   },
   checkbox: {
     width: 20,

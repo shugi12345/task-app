@@ -59,6 +59,13 @@ const TasksScreen = forwardRef((props, ref) => {
   const [deletedTasks, setDeletedTasks] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
 
+  const persistTasks = (list) => {
+    AsyncStorage.setItem(
+      'tasks',
+      JSON.stringify(list.map(({ animateIn, ...rest }) => rest))
+    );
+  };
+
   const sortTasks = (list, mode = sortMode) => {
     const sorted = [...list];
     switch (mode) {
@@ -114,7 +121,7 @@ const TasksScreen = forwardRef((props, ref) => {
       );
       const sorted = sortTasks(updated);
       setTasks(sorted);
-      AsyncStorage.setItem('tasks', JSON.stringify(sorted));
+      persistTasks(sorted);
     } else {
       const task = {
         id: Date.now().toString(),
@@ -124,9 +131,9 @@ const TasksScreen = forwardRef((props, ref) => {
         dueDate,
         created: new Date(),
       };
-      const newTasks = sortTasks([...tasks, task]);
+      const newTasks = sortTasks([...tasks, { ...task, animateIn: true }]);
       setTasks(newTasks);
-      AsyncStorage.setItem('tasks', JSON.stringify(newTasks));
+      persistTasks(newTasks);
     }
 
     setTitle('');
@@ -142,11 +149,11 @@ const TasksScreen = forwardRef((props, ref) => {
     const removed = tasks.find(t => t.id === id);
     const newTasks = sortTasks(tasks.filter(t => t.id !== id));
     setTasks(newTasks);
-    AsyncStorage.setItem('tasks', JSON.stringify(newTasks));
+    persistTasks(newTasks);
     if (removed) {
-      const newDeleted = [removed, ...deletedTasks];
-      setDeletedTasks(newDeleted);
-      AsyncStorage.setItem('deletedTasks', JSON.stringify(newDeleted));
+    const newDeleted = [removed, ...deletedTasks];
+    setDeletedTasks(newDeleted);
+    AsyncStorage.setItem('deletedTasks', JSON.stringify(newDeleted));
     }
   };
 
@@ -156,9 +163,9 @@ const TasksScreen = forwardRef((props, ref) => {
     const newDeleted = deletedTasks.filter(t => t.id !== id);
     setDeletedTasks(newDeleted);
     AsyncStorage.setItem('deletedTasks', JSON.stringify(newDeleted));
-    const newTasks = sortTasks([...tasks, item]);
+    const newTasks = sortTasks([...tasks, { ...item, animateIn: true }]);
     setTasks(newTasks);
-    AsyncStorage.setItem('tasks', JSON.stringify(newTasks));
+    persistTasks(newTasks);
   };
 
   const deleteForever = (id) => {
@@ -177,7 +184,12 @@ const TasksScreen = forwardRef((props, ref) => {
   };
 
   const renderItem = ({ item }) => (
-    <TaskItem task={item} onPress={() => startEdit(item)} onComplete={() => completeTask(item.id)} />
+    <TaskItem
+      task={item}
+      animateIn={item.animateIn}
+      onPress={() => startEdit(item)}
+      onComplete={() => completeTask(item.id)}
+    />
   );
 
   return (
@@ -209,6 +221,7 @@ const TasksScreen = forwardRef((props, ref) => {
         data={tasks}
         keyExtractor={item => item.id}
         renderItem={renderItem}
+        contentContainerStyle={{ paddingBottom: 120 }}
       />
 
       <Modal visible={showForm} animationType="slide" transparent onRequestClose={() => setShowForm(false)}>

@@ -20,6 +20,13 @@ const TodoScreen = forwardRef((props, ref) => {
   const [deletedItems, setDeletedItems] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
 
+  const persistItems = (list) => {
+    AsyncStorage.setItem(
+      'todoItems',
+      JSON.stringify(list.map(({ animateIn, ...rest }) => rest))
+    );
+  };
+
   const sortItems = (list, mode = sortMode) => {
     const sorted = [...list];
     if (mode === 'alpha') {
@@ -49,10 +56,10 @@ const TodoScreen = forwardRef((props, ref) => {
 
   const addItem = () => {
     if (!text) return;
-    const item = { id: Date.now().toString(), text, created: new Date() };
+    const item = { id: Date.now().toString(), text, created: new Date(), animateIn: true };
     const newItems = sortItems([...items, item]);
     setItems(newItems);
-    AsyncStorage.setItem('todoItems', JSON.stringify(newItems));
+    persistItems(newItems);
     setText('');
   };
 
@@ -60,7 +67,7 @@ const TodoScreen = forwardRef((props, ref) => {
     const removed = items.find(i => i.id === id);
     const newItems = items.filter(i => i.id !== id);
     setItems(newItems);
-    AsyncStorage.setItem('todoItems', JSON.stringify(newItems));
+    persistItems(newItems);
     if (removed) {
       const newDeleted = [removed, ...deletedItems];
       setDeletedItems(newDeleted);
@@ -74,9 +81,9 @@ const TodoScreen = forwardRef((props, ref) => {
     const newDeleted = deletedItems.filter(i => i.id !== id);
     setDeletedItems(newDeleted);
     AsyncStorage.setItem('deletedTodoItems', JSON.stringify(newDeleted));
-    const newItems = sortItems([...items, item]);
+    const newItems = sortItems([...items, { ...item, animateIn: true }]);
     setItems(newItems);
-    AsyncStorage.setItem('todoItems', JSON.stringify(newItems));
+    persistItems(newItems);
   };
 
   const deleteForever = (id) => {
@@ -86,7 +93,7 @@ const TodoScreen = forwardRef((props, ref) => {
   };
 
   const renderItem = ({ item }) => (
-    <TodoItem item={item} onToggle={() => toggleItem(item.id)} />
+    <TodoItem item={{ ...item }} onToggle={() => toggleItem(item.id)} />
   );
 
   return (
@@ -112,6 +119,7 @@ const TodoScreen = forwardRef((props, ref) => {
         data={items}
         keyExtractor={item => item.id}
         renderItem={renderItem}
+        contentContainerStyle={{ paddingBottom: 120 }}
       />
 
       <Modal visible={showForm} animationType="slide" transparent onRequestClose={() => setShowForm(false)}>
