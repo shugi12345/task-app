@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import TodoItem from '../components/TodoItem';
 import AppButton from '../components/AppButton';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TodoScreen = forwardRef((props, ref) => {
   const [items, setItems] = useState([]);
@@ -16,6 +17,8 @@ const TodoScreen = forwardRef((props, ref) => {
   const [showForm, setShowForm] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
   const [sortMode, setSortMode] = useState('added');
+  const [deletedItems, setDeletedItems] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
 
   const sortItems = (list, mode = sortMode) => {
     const sorted = [...list];
@@ -26,6 +29,15 @@ const TodoScreen = forwardRef((props, ref) => {
     }
     return sorted;
   };
+
+  useEffect(() => {
+    (async () => {
+      const saved = await AsyncStorage.getItem('todoItems');
+      if (saved) setItems(sortItems(JSON.parse(saved)));
+      const removed = await AsyncStorage.getItem('deletedTodoItems');
+      if (removed) setDeletedItems(JSON.parse(removed));
+    })();
+  }, []);
 
   useEffect(() => {
     setItems(prev => sortItems(prev, sortMode));
@@ -40,11 +52,37 @@ const TodoScreen = forwardRef((props, ref) => {
     const item = { id: Date.now().toString(), text, created: new Date() };
     const newItems = sortItems([...items, item]);
     setItems(newItems);
+    AsyncStorage.setItem('todoItems', JSON.stringify(newItems));
     setText('');
   };
 
   const toggleItem = (id) => {
-    setItems(items.filter(i => i.id !== id));
+    const removed = items.find(i => i.id === id);
+    const newItems = items.filter(i => i.id !== id);
+    setItems(newItems);
+    AsyncStorage.setItem('todoItems', JSON.stringify(newItems));
+    if (removed) {
+      const newDeleted = [removed, ...deletedItems];
+      setDeletedItems(newDeleted);
+      AsyncStorage.setItem('deletedTodoItems', JSON.stringify(newDeleted));
+    }
+  };
+
+  const restoreItem = (id) => {
+    const item = deletedItems.find(i => i.id === id);
+    if (!item) return;
+    const newDeleted = deletedItems.filter(i => i.id !== id);
+    setDeletedItems(newDeleted);
+    AsyncStorage.setItem('deletedTodoItems', JSON.stringify(newDeleted));
+    const newItems = sortItems([...items, item]);
+    setItems(newItems);
+    AsyncStorage.setItem('todoItems', JSON.stringify(newItems));
+  };
+
+  const deleteForever = (id) => {
+    const newDeleted = deletedItems.filter(i => i.id !== id);
+    setDeletedItems(newDeleted);
+    AsyncStorage.setItem('deletedTodoItems', JSON.stringify(newDeleted));
   };
 
   const renderItem = ({ item }) => (
@@ -55,12 +93,20 @@ const TodoScreen = forwardRef((props, ref) => {
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <Text style={styles.screenTitle}>Todo</Text>
-        <AppButton
-          style={styles.sortHeaderButton}
-          textStyle={styles.sortHeaderButtonText}
-          title={`Sort: ${sortMode === 'alpha' ? 'A-Z' : 'Added latest'}`}
-          onPress={() => setShowSortModal(true)}
-        />
+        <View style={styles.headerButtons}>
+          <AppButton
+            style={styles.sortHeaderButton}
+            textStyle={styles.sortHeaderButtonText}
+            title="History"
+            onPress={() => setShowHistory(true)}
+          />
+          <AppButton
+            style={styles.sortHeaderButton}
+            textStyle={styles.sortHeaderButtonText}
+            title={`Sort: ${sortMode === 'alpha' ? 'A-Z' : 'Latest'}`}
+            onPress={() => setShowSortModal(true)}
+          />
+        </View>
       </View>
       <FlatList
         data={items}
@@ -88,6 +134,36 @@ const TodoScreen = forwardRef((props, ref) => {
       </Modal>
 
       <Modal
+        visible={showHistory}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowHistory(false)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.historyModal}>
+            <Text style={styles.modalLabel}>Completed items</Text>
+            <FlatList
+              data={deletedItems}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <View style={styles.historyItem}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.historyTitle}>{item.text}</Text>
+                  </View>
+                  <View style={styles.buttonRow}>
+                    <AppButton title="Restore" onPress={() => restoreItem(item.id)} />
+                    <AppButton title="Delete" onPress={() => deleteForever(item.id)} />
+                  </View>
+                </View>
+              )}
+              ListEmptyComponent={<Text style={styles.emptyText}>No completed items</Text>}
+            />
+            <AppButton title="Close" onPress={() => setShowHistory(false)} />
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
         visible={showSortModal}
         animationType="fade"
         transparent
@@ -106,7 +182,7 @@ const TodoScreen = forwardRef((props, ref) => {
             />
             <AppButton
               style={styles.sortOption}
-              title="Added latest"
+              title="Latest"
               onPress={() => {
                 setSortMode('added');
                 setShowSortModal(false);
@@ -128,6 +204,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 12,
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   screenTitle: {
     color: '#fff',
@@ -180,6 +260,31 @@ const styles = StyleSheet.create({
   },
   sortOption: {
     marginVertical: 4,
+  },
+  historyModal: {
+    backgroundColor: '#1c1c1c',
+    padding: 16,
+    borderRadius: 8,
+    width: '90%',
+    maxHeight: '80%',
+  },
+  historyItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1e1e1e',
+    padding: 8,
+    marginVertical: 4,
+    borderRadius: 8,
+  },
+  historyTitle: {
+    color: '#fff',
+    fontSize: 16,
+    marginRight: 8,
+  },
+  emptyText: {
+    color: '#fff',
+    textAlign: 'center',
+    marginVertical: 8,
   },
   modalLabel: {
     color: '#fff',

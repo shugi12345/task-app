@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
   itemTextContainer: {
     flex: 1,
-    marginLeft: 8,
+    marginLeft: 16,
   },
   itemText: {
     fontSize: 16,

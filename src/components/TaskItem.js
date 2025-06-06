@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   },
   info: {
     flex: 1,
-    marginLeft: 8,
+    marginLeft: 16,
   },
   title: {
     fontSize: 16,

@@ -199,7 +199,7 @@ const TasksScreen = forwardRef((props, ref) => {
                 ? 'Priority'
                 : sortMode === 'alpha'
                 ? 'A-Z'
-                : 'Added latest'
+                : 'Latest'
             }`}
             onPress={() => setShowSortModal(true)}
           />
@@ -328,7 +328,7 @@ const TasksScreen = forwardRef((props, ref) => {
             />
             <AppButton
               style={styles.sortOption}
-              title="Added latest"
+              title="Latest"
               onPress={() => {
                 setSortMode('added');
                 setShowSortModal(false);
