@@ -61,6 +61,9 @@ export default function TaskItem({ task, onComplete, onPress }) {
         <View style={styles.info}>
           <Text style={styles.title}>{task.title}</Text>
           <Text style={styles.duration}>{task.duration}</Text>
+          {task.dueDate && (
+            <Text style={styles.dueDate}>Due {task.dueDate.slice(0, 10)}</Text>
+          )}
         </View>
         <View style={styles.urgency}>
           {[1, 2, 3, 4, 5].map((l) => (
@@ -84,7 +87,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#1e1e1e',
     paddingVertical: 12,
-    paddingHorizontal: 8,
+    paddingRight: 8,
+    paddingLeft: 16,
     borderRadius: 8,
     marginVertical: 6,
   },
@@ -98,6 +102,10 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   duration: {
+    fontSize: 12,
+    color: '#aaa',
+  },
+  dueDate: {
     fontSize: 12,
     color: '#aaa',
   },

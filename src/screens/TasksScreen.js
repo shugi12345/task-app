@@ -214,6 +214,7 @@ const TasksScreen = forwardRef((props, ref) => {
       <Modal visible={showForm} animationType="slide" transparent onRequestClose={() => setShowForm(false)}>
         <View style={styles.modalBackdrop}>
           <View style={styles.modalContent}>
+            <Text style={styles.modalLabel}>New Task</Text>
             <TextInput
               placeholder="Task title"
               placeholderTextColor="#aaa"

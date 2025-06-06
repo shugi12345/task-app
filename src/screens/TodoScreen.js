@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,22 @@ const TodoScreen = forwardRef((props, ref) => {
   const [items, setItems] = useState([]);
   const [text, setText] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [showSortModal, setShowSortModal] = useState(false);
+  const [sortMode, setSortMode] = useState('added');
+
+  const sortItems = (list, mode = sortMode) => {
+    const sorted = [...list];
+    if (mode === 'alpha') {
+      sorted.sort((a, b) => a.text.localeCompare(b.text));
+    } else {
+      sorted.sort((a, b) => new Date(b.created) - new Date(a.created));
+    }
+    return sorted;
+  };
+
+  useEffect(() => {
+    setItems(prev => sortItems(prev, sortMode));
+  }, [sortMode]);
 
   useImperativeHandle(ref, () => ({
     openAdd: () => setShowForm(true),
@@ -21,7 +37,9 @@ const TodoScreen = forwardRef((props, ref) => {
 
   const addItem = () => {
     if (!text) return;
-    setItems([...items, { id: Date.now().toString(), text }]);
+    const item = { id: Date.now().toString(), text, created: new Date() };
+    const newItems = sortItems([...items, item]);
+    setItems(newItems);
     setText('');
   };
 
@@ -35,7 +53,15 @@ const TodoScreen = forwardRef((props, ref) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.screenTitle}>Todo</Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.screenTitle}>Todo</Text>
+        <AppButton
+          style={styles.sortHeaderButton}
+          textStyle={styles.sortHeaderButtonText}
+          title={`Sort: ${sortMode === 'alpha' ? 'A-Z' : 'Added latest'}`}
+          onPress={() => setShowSortModal(true)}
+        />
+      </View>
       <FlatList
         data={items}
         keyExtractor={item => item.id}
@@ -45,6 +71,7 @@ const TodoScreen = forwardRef((props, ref) => {
       <Modal visible={showForm} animationType="slide" transparent onRequestClose={() => setShowForm(false)}>
         <View style={styles.modalBackdrop}>
           <View style={styles.modalContent}>
+            <Text style={styles.modalLabel}>New Item</Text>
             <TextInput
               style={styles.input}
               placeholder="Add todo"
@@ -59,6 +86,35 @@ const TodoScreen = forwardRef((props, ref) => {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        visible={showSortModal}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setShowSortModal(false)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.sortModal}>
+            <Text style={styles.modalLabel}>Sort items by:</Text>
+            <AppButton
+              style={styles.sortOption}
+              title="A-Z"
+              onPress={() => {
+                setSortMode('alpha');
+                setShowSortModal(false);
+              }}
+            />
+            <AppButton
+              style={styles.sortOption}
+              title="Added latest"
+              onPress={() => {
+                setSortMode('added');
+                setShowSortModal(false);
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 });
@@ -67,11 +123,29 @@ export default TodoScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#121212' },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
   screenTitle: {
     color: '#fff',
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 12,
+  },
+  sortHeaderButton: {
+    backgroundColor: 'transparent',
+    borderColor: '#bb86fc',
+    borderWidth: 1,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+  },
+  sortHeaderButtonText: {
+    color: '#bb86fc',
+    fontSize: 14,
   },
   input: {
     borderColor: '#444',
@@ -97,5 +171,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 8,
+  },
+  sortModal: {
+    backgroundColor: '#1c1c1c',
+    padding: 16,
+    borderRadius: 8,
+    width: '80%',
+  },
+  sortOption: {
+    marginVertical: 4,
+  },
+  modalLabel: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 16,
   },
 });
