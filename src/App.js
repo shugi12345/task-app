@@ -38,7 +38,7 @@ export default function App() {
         setActive(route.name);
       }}
     >
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="light-content" backgroundColor="#121212" />
       <View style={styles.root}>
         <View style={styles.header}>
           <Text style={styles.appName}>Task Rabbit</Text>
