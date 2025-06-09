@@ -6,6 +6,7 @@ import {
   FlatList,
   StyleSheet,
   Modal,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import TodoItem from '../components/TodoItem';
 import AppButton from '../components/AppButton';
@@ -19,6 +20,7 @@ const TodoScreen = forwardRef((props, ref) => {
   const [sortMode, setSortMode] = useState('added');
   const [deletedItems, setDeletedItems] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
+  const textInputRef = React.useRef();
 
   const persistItems = (list) => {
     AsyncStorage.setItem(
@@ -122,11 +124,20 @@ const TodoScreen = forwardRef((props, ref) => {
         contentContainerStyle={{ paddingBottom: 120 }}
       />
 
-      <Modal visible={showForm} animationType="slide" transparent onRequestClose={() => setShowForm(false)}>
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalContent}>
+      <Modal
+        visible={showForm}
+        animationType="slide"
+        transparent
+        presentationStyle="overFullScreen"
+        onRequestClose={() => setShowForm(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setShowForm(false)}>
+          <View style={styles.modalBackdrop}>
+            <TouchableWithoutFeedback>
+              <View style={styles.modalContent}>
             <Text style={styles.modalLabel}>New Item</Text>
             <TextInput
+              ref={textInputRef}
               style={styles.input}
               placeholder="Add todo"
               placeholderTextColor="#aaa"
@@ -134,21 +145,39 @@ const TodoScreen = forwardRef((props, ref) => {
               onChangeText={setText}
             />
             <View style={styles.buttonRow}>
-              <AppButton title="Cancel" onPress={() => setShowForm(false)} />
-              <AppButton title="Add" onPress={() => { addItem(); setShowForm(false); }} />
+              <AppButton
+                title="Cancel"
+                onPress={() => {
+                  textInputRef.current?.blur();
+                  setShowForm(false);
+                }}
+              />
+              <AppButton
+                title="Add"
+                onPress={() => {
+                  addItem();
+                  textInputRef.current?.blur();
+                  setShowForm(false);
+                }}
+              />
             </View>
+              </View>
+            </TouchableWithoutFeedback>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
 
       <Modal
         visible={showHistory}
         animationType="slide"
         transparent
+        presentationStyle="overFullScreen"
         onRequestClose={() => setShowHistory(false)}
       >
-        <View style={styles.modalBackdrop}>
-          <View style={styles.historyModal}>
+        <TouchableWithoutFeedback onPress={() => setShowHistory(false)}>
+          <View style={styles.modalBackdrop}>
+            <TouchableWithoutFeedback>
+              <View style={styles.historyModal}>
             <Text style={styles.modalLabel}>Completed items</Text>
             <FlatList
               data={deletedItems}
@@ -167,18 +196,23 @@ const TodoScreen = forwardRef((props, ref) => {
               ListEmptyComponent={<Text style={styles.emptyText}>No completed items</Text>}
             />
             <AppButton title="Close" onPress={() => setShowHistory(false)} />
+              </View>
+            </TouchableWithoutFeedback>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
 
       <Modal
         visible={showSortModal}
         animationType="fade"
         transparent
+        presentationStyle="overFullScreen"
         onRequestClose={() => setShowSortModal(false)}
       >
-        <View style={styles.modalBackdrop}>
-          <View style={styles.sortModal}>
+        <TouchableWithoutFeedback onPress={() => setShowSortModal(false)}>
+          <View style={styles.modalBackdrop}>
+            <TouchableWithoutFeedback>
+              <View style={styles.sortModal}>
             <Text style={styles.modalLabel}>Sort items by:</Text>
             <AppButton
               style={styles.sortOption}
@@ -196,8 +230,10 @@ const TodoScreen = forwardRef((props, ref) => {
                 setShowSortModal(false);
               }}
             />
+              </View>
+            </TouchableWithoutFeedback>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
     </View>
   );

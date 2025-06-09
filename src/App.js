@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
-import { StatusBar, View, Text, StyleSheet } from 'react-native';
+import { StatusBar, View, Text, StyleSheet, UIManager, Platform } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import FloatingActionButton from './components/FloatingActionButton';
 import TasksScreen from './screens/TasksScreen';
@@ -20,6 +20,12 @@ export default function App() {
   const [active, setActive] = useState('Tasks');
   const tasksRef = useRef();
   const todoRef = useRef();
+
+  useEffect(() => {
+    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+  }, []);
 
   const handleFab = () => {
     if (active === 'Tasks') {
