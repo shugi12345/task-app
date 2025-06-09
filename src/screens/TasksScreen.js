@@ -41,7 +41,11 @@ function formatDurationWithZeros(mins) {
 }
 
 function formatDate(d) {
-  return d.toISOString().slice(0, 10);
+  const date = new Date(d);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 }
 
 const TasksScreen = forwardRef((props, ref) => {
@@ -115,7 +119,7 @@ const TasksScreen = forwardRef((props, ref) => {
               title,
               duration: formatDuration(durationMinutes),
               urgency: Number(urgency),
-              dueDate,
+              dueDate: dueDate ? dueDate.toISOString() : null,
             }
           : t
       );
@@ -128,8 +132,8 @@ const TasksScreen = forwardRef((props, ref) => {
         title,
         duration: formatDuration(durationMinutes),
         urgency: Number(urgency),
-        dueDate,
-        created: new Date(),
+        dueDate: dueDate ? dueDate.toISOString() : null,
+        created: new Date().toISOString(),
       };
       const newTasks = sortTasks([...tasks, { ...task, animateIn: true }]);
       setTasks(newTasks);

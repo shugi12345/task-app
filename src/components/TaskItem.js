@@ -8,6 +8,14 @@ import {
 } from 'react-native';
 import Checkbox from 'expo-checkbox';
 
+function formatDate(d) {
+  const date = new Date(d);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 function colorFor(level) {
   const ratio = (level - 1) / 4;
   const r = Math.round(Math.min(255, 510 * ratio));
@@ -77,7 +85,7 @@ export default function TaskItem({ task, onComplete, onPress }) {
           <Text style={styles.title}>{task.title}</Text>
           <Text style={styles.duration}>{task.duration}</Text>
           {task.dueDate && (
-            <Text style={styles.dueDate}>Due {task.dueDate.slice(0, 10)}</Text>
+            <Text style={styles.dueDate}>Due {formatDate(task.dueDate)}</Text>
           )}
         </View>
         <View style={styles.urgency}>
