@@ -48,7 +48,7 @@ export default function TaskItem({ task, onComplete, onPress }) {
       Animated.timing(anim, {
         toValue: 0,
         duration: 300,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }).start();
     } else if (rowHeight !== null) {
       anim.setValue(0);
@@ -61,7 +61,7 @@ export default function TaskItem({ task, onComplete, onPress }) {
         Animated.timing(anim, {
           toValue: 1,
           duration: 300,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }),
         Animated.timing(heightAnim, {
           toValue: 0,
