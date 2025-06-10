@@ -38,55 +38,31 @@ function computeUrgency(task) {
 export default function TaskItem({ task, onComplete, onPress }) {
   const [checked, setChecked] = React.useState(false);
   const anim = React.useRef(new Animated.Value(task.animateIn ? -1 : 0)).current;
-  const heightAnim = React.useRef(new Animated.Value(0)).current;
-  const marginAnim = React.useRef(new Animated.Value(6)).current;
-  const [rowHeight, setRowHeight] = React.useState(null);
   const urgency = computeUrgency(task);
 
   React.useEffect(() => {
-    if (task.animateIn && rowHeight !== null) {
+    if (task.animateIn) {
       Animated.timing(anim, {
         toValue: 0,
         duration: 300,
-        useNativeDriver: false,
+        useNativeDriver: true,
       }).start();
-    } else if (rowHeight !== null) {
-      anim.setValue(0);
     }
-  }, [rowHeight]);
+  }, []);
 
   React.useEffect(() => {
-    if (checked && rowHeight !== null) {
-      Animated.parallel([
-        Animated.timing(anim, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: false,
-        }),
-        Animated.timing(heightAnim, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: false,
-        }),
-        Animated.timing(marginAnim, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: false,
-        }),
-      ]).start(() => onComplete());
+    if (checked) {
+      Animated.timing(anim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => onComplete());
     }
-  }, [checked, rowHeight]);
+  }, [checked]);
 
   return (
     <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
       <Animated.View
-        onLayout={(e) => {
-          if (rowHeight === null) {
-            const h = e.nativeEvent.layout.height;
-            heightAnim.setValue(h);
-            setRowHeight(h);
-          }
-        }}
         style={[
           styles.row,
           {
@@ -99,9 +75,6 @@ export default function TaskItem({ task, onComplete, onPress }) {
                 }),
               },
             ],
-            height: rowHeight !== null ? heightAnim : undefined,
-            marginVertical: rowHeight !== null ? marginAnim : 6,
-            overflow: 'hidden',
           },
         ]}
       >

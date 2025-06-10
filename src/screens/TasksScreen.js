@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
+  LayoutAnimation,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import TaskItem from '../components/TaskItem';
@@ -151,6 +152,7 @@ const TasksScreen = forwardRef((props, ref) => {
   };
 
   const completeTask = (id) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     const removed = tasks.find(t => t.id === id);
     const newTasks = sortTasks(tasks.filter(t => t.id !== id));
     setTasks(newTasks);
