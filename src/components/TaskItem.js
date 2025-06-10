@@ -37,12 +37,14 @@ function computeUrgency(task) {
 
 export default function TaskItem({ task, onComplete, onPress }) {
   const [checked, setChecked] = React.useState(false);
-  const anim = React.useRef(new Animated.Value(task.animateIn ? -1 : 0)).current;
+  const slideAnim = React.useRef(new Animated.Value(task.animateIn ? -1 : 0)).current;
+  const collapseAnim = React.useRef(new Animated.Value(1)).current;
+  const [rowHeight, setRowHeight] = React.useState(null);
   const urgency = computeUrgency(task);
 
   React.useEffect(() => {
     if (task.animateIn) {
-      Animated.timing(anim, {
+      Animated.timing(slideAnim, {
         toValue: 0,
         duration: 300,
         useNativeDriver: true,
@@ -52,24 +54,47 @@ export default function TaskItem({ task, onComplete, onPress }) {
 
   React.useEffect(() => {
     if (checked) {
-      Animated.timing(anim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => onComplete());
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(collapseAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }),
+      ]).start(() => onComplete());
     }
   }, [checked]);
 
   return (
     <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
       <Animated.View
+        onLayout={(e) => {
+          if (rowHeight === null) setRowHeight(e.nativeEvent.layout.height);
+        }}
         style={[
           styles.row,
+          rowHeight != null && {
+            height: collapseAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, rowHeight],
+            }),
+            marginVertical: collapseAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 6],
+            }),
+          },
           {
-            opacity: anim.interpolate({ inputRange: [-1, 0, 1], outputRange: [0, 1, 0] }),
+            opacity: slideAnim.interpolate({
+              inputRange: [-1, 0, 1],
+              outputRange: [0, 1, 0],
+            }),
             transform: [
               {
-                translateX: anim.interpolate({
+                translateX: slideAnim.interpolate({
                   inputRange: [-1, 0, 1],
                   outputRange: [-100, 0, -100],
                 }),
