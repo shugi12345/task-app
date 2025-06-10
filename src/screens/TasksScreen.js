@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Modal,
   TouchableOpacity,
+  KeyboardAvoidingView,
   TouchableWithoutFeedback,
   LayoutAnimation,
 } from 'react-native';
@@ -240,7 +241,7 @@ const TasksScreen = forwardRef((props, ref) => {
         <TouchableWithoutFeedback onPress={() => { setShowForm(false); }}>
           <View style={styles.modalBackdrop}>
             <TouchableWithoutFeedback>
-              <View style={styles.modalContent}>
+              <KeyboardAvoidingView enabled={false} style={styles.modalContent}>
             <Text style={styles.modalLabel}>New Task</Text>
             <TextInput
               ref={titleInputRef}
@@ -311,10 +312,10 @@ const TasksScreen = forwardRef((props, ref) => {
               />
             )}
             <View style={styles.buttonRow}>
-              <AppButton title="Cancel" onPress={() => { setShowForm(false); setEditingTask(null); }} />
-              <AppButton title={editingTask ? 'Save' : 'Add'} onPress={saveTask} />
+              <AppButton title="Cancel" onPress={() => { titleInputRef.current?.blur(); setShowForm(false); setEditingTask(null); }} />
+              <AppButton title={editingTask ? 'Save' : 'Add'} onPress={() => { saveTask(); titleInputRef.current?.blur(); }} />
             </View>
-              </View>
+              </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
           </View>
         </TouchableWithoutFeedback>

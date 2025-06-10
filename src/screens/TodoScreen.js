@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Modal,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
 } from 'react-native';
 import TodoItem from '../components/TodoItem';
 import AppButton from '../components/AppButton';
@@ -134,7 +135,7 @@ const TodoScreen = forwardRef((props, ref) => {
         <TouchableWithoutFeedback onPress={() => setShowForm(false)}>
           <View style={styles.modalBackdrop}>
             <TouchableWithoutFeedback>
-              <View style={styles.modalContent}>
+              <KeyboardAvoidingView enabled={false} style={styles.modalContent}>
             <Text style={styles.modalLabel}>New Item</Text>
             <TextInput
               ref={textInputRef}
@@ -161,7 +162,7 @@ const TodoScreen = forwardRef((props, ref) => {
                 }}
               />
             </View>
-              </View>
+              </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
           </View>
         </TouchableWithoutFeedback>

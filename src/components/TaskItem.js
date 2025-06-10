@@ -38,31 +38,54 @@ function computeUrgency(task) {
 export default function TaskItem({ task, onComplete, onPress }) {
   const [checked, setChecked] = React.useState(false);
   const anim = React.useRef(new Animated.Value(task.animateIn ? -1 : 0)).current;
+  const heightAnim = React.useRef(new Animated.Value(0)).current;
+  const marginAnim = React.useRef(new Animated.Value(6)).current;
+  const [measured, setMeasured] = React.useState(false);
   const urgency = computeUrgency(task);
 
   React.useEffect(() => {
-    if (task.animateIn) {
+    if (task.animateIn && measured) {
       Animated.timing(anim, {
         toValue: 0,
         duration: 300,
         useNativeDriver: true,
       }).start();
+    } else if (measured) {
+      anim.setValue(0);
     }
-  }, []);
+  }, [measured]);
 
   React.useEffect(() => {
-    if (checked) {
-      Animated.timing(anim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => onComplete());
+    if (checked && measured) {
+      Animated.parallel([
+        Animated.timing(anim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(heightAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }),
+        Animated.timing(marginAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }),
+      ]).start(() => onComplete());
     }
-  }, [checked]);
+  }, [checked, measured]);
 
   return (
     <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
       <Animated.View
+        onLayout={(e) => {
+          if (!measured) {
+            heightAnim.setValue(e.nativeEvent.layout.height);
+            setMeasured(true);
+          }
+        }}
         style={[
           styles.row,
           {
@@ -75,6 +98,9 @@ export default function TaskItem({ task, onComplete, onPress }) {
                 }),
               },
             ],
+            height: heightAnim,
+            marginVertical: marginAnim,
+            overflow: 'hidden',
           },
         ]}
       >
