@@ -40,23 +40,23 @@ export default function TaskItem({ task, onComplete, onPress }) {
   const anim = React.useRef(new Animated.Value(task.animateIn ? -1 : 0)).current;
   const heightAnim = React.useRef(new Animated.Value(0)).current;
   const marginAnim = React.useRef(new Animated.Value(6)).current;
-  const [measured, setMeasured] = React.useState(false);
+  const [rowHeight, setRowHeight] = React.useState(null);
   const urgency = computeUrgency(task);
 
   React.useEffect(() => {
-    if (task.animateIn && measured) {
+    if (task.animateIn && rowHeight !== null) {
       Animated.timing(anim, {
         toValue: 0,
         duration: 300,
         useNativeDriver: true,
       }).start();
-    } else if (measured) {
+    } else if (rowHeight !== null) {
       anim.setValue(0);
     }
-  }, [measured]);
+  }, [rowHeight]);
 
   React.useEffect(() => {
-    if (checked && measured) {
+    if (checked && rowHeight !== null) {
       Animated.parallel([
         Animated.timing(anim, {
           toValue: 1,
@@ -75,15 +75,16 @@ export default function TaskItem({ task, onComplete, onPress }) {
         }),
       ]).start(() => onComplete());
     }
-  }, [checked, measured]);
+  }, [checked, rowHeight]);
 
   return (
     <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
       <Animated.View
         onLayout={(e) => {
-          if (!measured) {
-            heightAnim.setValue(e.nativeEvent.layout.height);
-            setMeasured(true);
+          if (rowHeight === null) {
+            const h = e.nativeEvent.layout.height;
+            heightAnim.setValue(h);
+            setRowHeight(h);
           }
         }}
         style={[
@@ -98,8 +99,8 @@ export default function TaskItem({ task, onComplete, onPress }) {
                 }),
               },
             ],
-            height: heightAnim,
-            marginVertical: marginAnim,
+            height: rowHeight !== null ? heightAnim : undefined,
+            marginVertical: rowHeight !== null ? marginAnim : 6,
             overflow: 'hidden',
           },
         ]}
