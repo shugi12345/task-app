@@ -8,6 +8,7 @@ import {
   Modal,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
+  LayoutAnimation,
 } from 'react-native';
 import TodoItem from '../components/TodoItem';
 import AppButton from '../components/AppButton';
@@ -67,6 +68,7 @@ const TodoScreen = forwardRef((props, ref) => {
   };
 
   const toggleItem = (id) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     const removed = items.find(i => i.id === id);
     const newItems = items.filter(i => i.id !== id);
     setItems(newItems);

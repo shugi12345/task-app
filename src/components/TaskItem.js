@@ -38,8 +38,6 @@ function computeUrgency(task) {
 export default function TaskItem({ task, onComplete, onPress }) {
   const [checked, setChecked] = React.useState(false);
   const slideAnim = React.useRef(new Animated.Value(task.animateIn ? -1 : 0)).current;
-  const collapseAnim = React.useRef(new Animated.Value(1)).current;
-  const [rowHeight, setRowHeight] = React.useState(null);
   const urgency = computeUrgency(task);
 
   React.useEffect(() => {
@@ -54,39 +52,19 @@ export default function TaskItem({ task, onComplete, onPress }) {
 
   React.useEffect(() => {
     if (checked) {
-      Animated.parallel([
-        Animated.timing(slideAnim, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(collapseAnim, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: false,
-        }),
-      ]).start(() => onComplete());
+      Animated.timing(slideAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(onComplete);
     }
   }, [checked]);
 
   return (
     <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
       <Animated.View
-        onLayout={(e) => {
-          if (rowHeight === null) setRowHeight(e.nativeEvent.layout.height);
-        }}
         style={[
           styles.row,
-          rowHeight != null && {
-            height: collapseAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, rowHeight],
-            }),
-            marginVertical: collapseAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, 6],
-            }),
-          },
           {
             opacity: slideAnim.interpolate({
               inputRange: [-1, 0, 1],
