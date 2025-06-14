@@ -7,6 +7,8 @@ import {
   StyleSheet,
   Modal,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
   LayoutAnimation,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -62,6 +64,7 @@ const TasksScreen = forwardRef((props, ref) => {
   const [sortMode, setSortMode] = useState('priority');
   const [deletedTasks, setDeletedTasks] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
+  const titleInputRef = React.useRef();
 
   const persistTasks = (list) => {
     AsyncStorage.setItem(
@@ -228,43 +231,71 @@ const TasksScreen = forwardRef((props, ref) => {
         contentContainerStyle={{ paddingBottom: 120 }}
       />
 
-      <Modal visible={showForm} animationType="slide" transparent onRequestClose={() => setShowForm(false)}>
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalContent}>
+      <Modal
+        visible={showForm}
+        animationType="slide"
+        transparent
+        presentationStyle="overFullScreen"
+        onRequestClose={() => setShowForm(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => { setShowForm(false); }}>
+          <View style={styles.modalBackdrop}>
+            <TouchableWithoutFeedback>
+              <KeyboardAvoidingView enabled={false} style={styles.modalContent}>
             <Text style={styles.modalLabel}>New Task</Text>
             <TextInput
+              ref={titleInputRef}
               placeholder="Task title"
               placeholderTextColor="#aaa"
               value={title}
               onChangeText={setTitle}
               style={styles.input}
             />
-            <TouchableOpacity onPress={() => setShowDurationPicker(true)}>
+            <TouchableOpacity
+              onPress={() => {
+                titleInputRef.current?.blur();
+                setShowDurationPicker(true);
+              }}
+            >
               <Text style={styles.input}>{formatDuration(durationMinutes) || 'Pick duration'}</Text>
             </TouchableOpacity>
             {showDurationPicker && (
-              <Modal transparent animationType="fade" onRequestClose={() => setShowDurationPicker(false)}>
-                <View style={styles.modalBackdrop}>
-                  <View style={styles.pickerModal}>
-                    <Text style={styles.modalLabel}>{formatDurationWithZeros(durationMinutes)}</Text>
-                    <Slider
-                      minimumValue={0}
-                      maximumValue={240}
-                      step={5}
-                      value={durationMinutes}
-                      onValueChange={setDurationMinutes}
-                      minimumTrackTintColor="#bb86fc"
-                      style={{ width: '100%', height: 40, marginBottom: 16 }}
-                    />
-                    <AppButton title="Done" onPress={() => setShowDurationPicker(false)} />
+              <Modal
+                transparent
+                animationType="fade"
+                presentationStyle="overFullScreen"
+                onRequestClose={() => setShowDurationPicker(false)}
+              >
+                <TouchableWithoutFeedback onPress={() => setShowDurationPicker(false)}>
+                  <View style={styles.modalBackdrop}>
+                    <TouchableWithoutFeedback>
+                      <View style={styles.pickerModal}>
+                        <Text style={styles.modalLabel}>{formatDurationWithZeros(durationMinutes)}</Text>
+                        <Slider
+                          minimumValue={0}
+                          maximumValue={240}
+                          step={5}
+                          value={durationMinutes}
+                          onValueChange={setDurationMinutes}
+                          minimumTrackTintColor="#bb86fc"
+                          style={{ width: '100%', height: 40, marginBottom: 16 }}
+                        />
+                        <AppButton title="Done" onPress={() => setShowDurationPicker(false)} />
+                      </View>
+                    </TouchableWithoutFeedback>
                   </View>
-                </View>
+                </TouchableWithoutFeedback>
               </Modal>
             )}
 
             <UrgencyPicker value={urgency} onChange={setUrgency} />
 
-            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+            <TouchableOpacity
+              onPress={() => {
+                titleInputRef.current?.blur();
+                setShowDatePicker(true);
+              }}
+            >
               <Text style={[styles.input, styles.dateInput]}>
                 {dueDate ? formatDate(dueDate) : 'Pick due date'}
               </Text>
@@ -281,21 +312,26 @@ const TasksScreen = forwardRef((props, ref) => {
               />
             )}
             <View style={styles.buttonRow}>
-              <AppButton title="Cancel" onPress={() => { setShowForm(false); setEditingTask(null); }} />
-              <AppButton title={editingTask ? 'Save' : 'Add'} onPress={saveTask} />
+              <AppButton title="Cancel" onPress={() => { titleInputRef.current?.blur(); setShowForm(false); setEditingTask(null); }} />
+              <AppButton title={editingTask ? 'Save' : 'Add'} onPress={() => { saveTask(); titleInputRef.current?.blur(); }} />
             </View>
+              </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
 
       <Modal
         visible={showHistory}
         animationType="slide"
         transparent
+        presentationStyle="overFullScreen"
         onRequestClose={() => setShowHistory(false)}
       >
-        <View style={styles.modalBackdrop}>
-          <View style={styles.historyModal}>
+        <TouchableWithoutFeedback onPress={() => setShowHistory(false)}>
+          <View style={styles.modalBackdrop}>
+            <TouchableWithoutFeedback>
+              <View style={styles.historyModal}>
             <Text style={styles.modalLabel}>Deleted tasks</Text>
             <FlatList
               data={deletedTasks}
@@ -314,18 +350,23 @@ const TasksScreen = forwardRef((props, ref) => {
               ListEmptyComponent={<Text style={styles.emptyText}>No deleted tasks</Text>}
             />
             <AppButton title="Close" onPress={() => setShowHistory(false)} />
+              </View>
+            </TouchableWithoutFeedback>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
 
       <Modal
         visible={showSortModal}
         animationType="fade"
         transparent
+        presentationStyle="overFullScreen"
         onRequestClose={() => setShowSortModal(false)}
       >
-        <View style={styles.modalBackdrop}>
-          <View style={styles.sortModal}>
+        <TouchableWithoutFeedback onPress={() => setShowSortModal(false)}>
+          <View style={styles.modalBackdrop}>
+            <TouchableWithoutFeedback>
+              <View style={styles.sortModal}>
             <Text style={styles.modalLabel}>Sort tasks by:</Text>
             <AppButton
               style={styles.sortOption}
@@ -351,8 +392,10 @@ const TasksScreen = forwardRef((props, ref) => {
                 setShowSortModal(false);
               }}
             />
+              </View>
+            </TouchableWithoutFeedback>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
     </View>
   );

@@ -37,12 +37,12 @@ function computeUrgency(task) {
 
 export default function TaskItem({ task, onComplete, onPress }) {
   const [checked, setChecked] = React.useState(false);
-  const anim = React.useRef(new Animated.Value(task.animateIn ? -1 : 0)).current;
+  const slideAnim = React.useRef(new Animated.Value(task.animateIn ? -1 : 0)).current;
   const urgency = computeUrgency(task);
 
   React.useEffect(() => {
     if (task.animateIn) {
-      Animated.timing(anim, {
+      Animated.timing(slideAnim, {
         toValue: 0,
         duration: 300,
         useNativeDriver: true,
@@ -52,11 +52,11 @@ export default function TaskItem({ task, onComplete, onPress }) {
 
   React.useEffect(() => {
     if (checked) {
-      Animated.timing(anim, {
+      Animated.timing(slideAnim, {
         toValue: 1,
         duration: 300,
         useNativeDriver: true,
-      }).start(() => onComplete());
+      }).start(onComplete);
     }
   }, [checked]);
 
@@ -66,10 +66,13 @@ export default function TaskItem({ task, onComplete, onPress }) {
         style={[
           styles.row,
           {
-            opacity: anim.interpolate({ inputRange: [-1, 0, 1], outputRange: [0, 1, 0] }),
+            opacity: slideAnim.interpolate({
+              inputRange: [-1, 0, 1],
+              outputRange: [0, 1, 0],
+            }),
             transform: [
               {
-                translateX: anim.interpolate({
+                translateX: slideAnim.interpolate({
                   inputRange: [-1, 0, 1],
                   outputRange: [-100, 0, -100],
                 }),

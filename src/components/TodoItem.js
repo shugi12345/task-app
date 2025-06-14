@@ -4,11 +4,11 @@ import Checkbox from 'expo-checkbox';
 
 export default function TodoItem({ item, onToggle }) {
   const [checked, setChecked] = React.useState(false);
-  const anim = React.useRef(new Animated.Value(item.animateIn ? -1 : 0)).current;
+  const slideAnim = React.useRef(new Animated.Value(item.animateIn ? -1 : 0)).current;
 
   React.useEffect(() => {
     if (item.animateIn) {
-      Animated.timing(anim, {
+      Animated.timing(slideAnim, {
         toValue: 0,
         duration: 300,
         useNativeDriver: true,
@@ -18,11 +18,11 @@ export default function TodoItem({ item, onToggle }) {
 
   React.useEffect(() => {
     if (checked) {
-      Animated.timing(anim, {
+      Animated.timing(slideAnim, {
         toValue: 1,
         duration: 300,
         useNativeDriver: true,
-      }).start(() => onToggle());
+      }).start(onToggle);
     }
   }, [checked]);
 
@@ -31,10 +31,10 @@ export default function TodoItem({ item, onToggle }) {
       style={[
         styles.item,
         {
-          opacity: anim.interpolate({ inputRange: [-1, 0, 1], outputRange: [0, 1, 0] }),
+          opacity: slideAnim.interpolate({ inputRange: [-1, 0, 1], outputRange: [0, 1, 0] }),
           transform: [
             {
-              translateX: anim.interpolate({
+              translateX: slideAnim.interpolate({
                 inputRange: [-1, 0, 1],
                 outputRange: [-100, 0, -100],
               }),
