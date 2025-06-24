@@ -1,0 +1,380 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Screen snapshots TasksScreen 1`] = `
+<View
+  style={
+    {
+      "backgroundColor": "#121212",
+      "flex": 1,
+      "padding": 20,
+    }
+  }
+>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "justifyContent": "space-between",
+        "marginBottom": 12,
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#fff",
+          "fontSize": 24,
+          "fontWeight": "bold",
+        }
+      }
+    >
+      Tasks
+    </Text>
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "flexDirection": "row",
+        }
+      }
+    >
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "alignItems": "center",
+            "backgroundColor": "transparent",
+            "borderColor": "#bb86fc",
+            "borderRadius": 8,
+            "borderWidth": 1,
+            "marginHorizontal": 4,
+            "opacity": 1,
+            "paddingHorizontal": 8,
+            "paddingVertical": 6,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#fff",
+                "fontSize": 16,
+                "fontWeight": "bold",
+              },
+              {
+                "color": "#bb86fc",
+                "fontSize": 14,
+              },
+            ]
+          }
+        >
+          History
+        </Text>
+      </View>
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "alignItems": "center",
+            "backgroundColor": "transparent",
+            "borderColor": "#bb86fc",
+            "borderRadius": 8,
+            "borderWidth": 1,
+            "marginHorizontal": 4,
+            "opacity": 1,
+            "paddingHorizontal": 8,
+            "paddingVertical": 6,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#fff",
+                "fontSize": 16,
+                "fontWeight": "bold",
+              },
+              {
+                "color": "#bb86fc",
+                "fontSize": 14,
+              },
+            ]
+          }
+        >
+          Sort: Priority
+        </Text>
+      </View>
+    </View>
+  </View>
+  <RCTScrollView
+    contentContainerStyle={
+      {
+        "paddingBottom": 120,
+      }
+    }
+    data={[]}
+    getItem={[Function]}
+    getItemCount={[Function]}
+    keyExtractor={[Function]}
+    onContentSizeChange={[Function]}
+    onLayout={[Function]}
+    onMomentumScrollBegin={[Function]}
+    onMomentumScrollEnd={[Function]}
+    onScroll={[Function]}
+    onScrollBeginDrag={[Function]}
+    onScrollEndDrag={[Function]}
+    removeClippedSubviews={false}
+    renderItem={[Function]}
+    scrollEventThrottle={0.0001}
+    stickyHeaderIndices={[]}
+    viewabilityConfigCallbackPairs={[]}
+  >
+    <View />
+  </RCTScrollView>
+</View>
+`;
+
+exports[`Screen snapshots TodoScreen 1`] = `
+<View
+  style={
+    {
+      "backgroundColor": "#121212",
+      "flex": 1,
+      "padding": 20,
+    }
+  }
+>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "justifyContent": "space-between",
+        "marginBottom": 12,
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#fff",
+          "fontSize": 24,
+          "fontWeight": "bold",
+          "marginBottom": 12,
+        }
+      }
+    >
+      Todo
+    </Text>
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "flexDirection": "row",
+        }
+      }
+    >
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "alignItems": "center",
+            "backgroundColor": "transparent",
+            "borderColor": "#bb86fc",
+            "borderRadius": 8,
+            "borderWidth": 1,
+            "marginHorizontal": 4,
+            "opacity": 1,
+            "paddingHorizontal": 8,
+            "paddingVertical": 6,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#fff",
+                "fontSize": 16,
+                "fontWeight": "bold",
+              },
+              {
+                "color": "#bb86fc",
+                "fontSize": 14,
+              },
+            ]
+          }
+        >
+          History
+        </Text>
+      </View>
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "alignItems": "center",
+            "backgroundColor": "transparent",
+            "borderColor": "#bb86fc",
+            "borderRadius": 8,
+            "borderWidth": 1,
+            "marginHorizontal": 4,
+            "opacity": 1,
+            "paddingHorizontal": 8,
+            "paddingVertical": 6,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#fff",
+                "fontSize": 16,
+                "fontWeight": "bold",
+              },
+              {
+                "color": "#bb86fc",
+                "fontSize": 14,
+              },
+            ]
+          }
+        >
+          Sort: Latest
+        </Text>
+      </View>
+    </View>
+  </View>
+  <RCTScrollView
+    contentContainerStyle={
+      {
+        "paddingBottom": 120,
+      }
+    }
+    data={[]}
+    getItem={[Function]}
+    getItemCount={[Function]}
+    keyExtractor={[Function]}
+    onContentSizeChange={[Function]}
+    onLayout={[Function]}
+    onMomentumScrollBegin={[Function]}
+    onMomentumScrollEnd={[Function]}
+    onScroll={[Function]}
+    onScrollBeginDrag={[Function]}
+    onScrollEndDrag={[Function]}
+    removeClippedSubviews={false}
+    renderItem={[Function]}
+    scrollEventThrottle={0.0001}
+    stickyHeaderIndices={[]}
+    viewabilityConfigCallbackPairs={[]}
+  >
+    <View />
+  </RCTScrollView>
+</View>
+`;

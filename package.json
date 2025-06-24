@@ -28,7 +28,7 @@
     "react-native-tab-view": "^4.1.1"
   },
   "devDependencies": {
-    "@babel/core": "7.21.5",
+    "@babel/core": "^7.22.10",
     "jest": "29.7.0",
     "jest-expo": "~53.0.5",
     "react-test-renderer": "19.0.0"

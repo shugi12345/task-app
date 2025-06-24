@@ -359,6 +359,7 @@ const TasksScreen = forwardRef((props, ref) => {
 });
 
 export default TasksScreen;
+export { formatDuration, parseDuration, formatDurationWithZeros, formatDate };
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#121212' },
